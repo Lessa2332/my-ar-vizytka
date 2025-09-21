@@ -30,6 +30,7 @@
                 this.currentQ = 0;
                 this.score = 0;
                 this.timer = null;
+
                 this.canvas = document.createElement('canvas');
                 this.canvas.width = 1024;
                 this.canvas.height = 768;
@@ -37,14 +38,16 @@
                 this.texture = new THREE.CanvasTexture(this.canvas);
                 this.el.setAttribute('material', { src: this.texture, side: 'double' });
                 this.drawQuiz();
+
                 this.el.addEventListener('click', (evt) => {
                     if (!evt.detail.uv) {
-                        console.warn('UV-координати недоступні');
+                        console.warn('⚠️ UV-координати недоступні');
                         return;
                     }
                     let uv = evt.detail.uv;
                     if (uv.y > 0.4 && uv.y < 0.65) {
                         let choice = Math.floor(uv.x * 3);
+                        console.log('✅ Вибрана відповідь:', choice);
                         this.checkAnswer(choice);
                     }
                 });
@@ -78,7 +81,12 @@
                 this.texture.needsUpdate = true;
             },
             checkAnswer: function (choice) {
-                if (choice === this.questions[this.currentQ].correct) this.score++;
+                if (choice === this.questions[this.currentQ].correct) {
+                    this.score++;
+                    console.log('⭐ Правильна відповідь!');
+                } else {
+                    console.log('❌ Неправильна відповідь');
+                }
                 this.currentQ++;
                 clearTimeout(this.timer);
                 this.timer = setTimeout(() => {
@@ -102,12 +110,14 @@
 
         <a-entity mindar-image-target="targetIndex: 0">
             
+            <!-- Фото з анімацією появи -->
             <a-plane id="main-photo-plane" position="0 0 0" height="1" width="1" 
                 material="src: https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg" 
                 scale="0 0 0" visible="false">
                 <a-animation attribute="scale" from="0 0 0" to="1 1 1" dur="1000" easing="ease-in-out" begin="start-ar"></a-animation>
             </a-plane>
 
+            <!-- Портал з пульсацією -->
             <a-plane id="portal" position="0 0 0.05" height="0.3" width="0.3" 
                 material="color: #00ffcc; opacity: 0.5" 
                 scale="0 0 0" visible="false">
@@ -115,8 +125,10 @@
                 <a-animation attribute="scale" from="1 1 1" to="1.1 1.1 1.1" dur="1500" direction="alternate" loop="true" easing="ease-in-out" delay="500"></a-animation>
             </a-plane>
 
+            <!-- Інтерактивні кнопки -->
             <a-entity id="interactive-elements" position="0 0 0.1" visible="false">
 
+                <!-- Кнопка "Відео" -->
                 <a-entity class="interactive" position="0 0 0" rotation="0 0 0"
                     onclick="document.getElementById('video-modal').emit('show-modal');"
                     event-set__mouseenter="scale: 1.15 1.15 1.15; material.color: #00FFFF"
@@ -129,6 +141,7 @@
                     <a-animation attribute="rotation" from="0 0 0" to="0 360 0" dur="1200" easing="linear" begin="start-ar" delay="800" loop="true"></a-animation>
                 </a-entity>
                 
+                <!-- Кнопка "Гра" -->
                 <a-entity class="interactive" position="0 0 0" rotation="0 0 0"
                     onclick="document.getElementById('game-modal').emit('show-modal');"
                     event-set__mouseenter="scale: 1.15 1.15 1.15; material.color: #00FFFF"
@@ -141,6 +154,7 @@
                     <a-animation attribute="rotation" from="0 0 0" to="0 360 0" dur="1200" easing="linear" begin="start-ar" delay="1200" loop="true"></a-animation>
                 </a-entity>
                 
+                <!-- Кнопка "Соцмережі" -->
                 <a-entity class="interactive" position="0 0 0" rotation="0 0 0"
                     onclick="document.getElementById('social-modal').emit('show-modal');"
                     event-set__mouseenter="scale: 1.15 1.15 1.15; material.color: #00FFFF"
@@ -153,6 +167,7 @@
                     <a-animation attribute="rotation" from="0 0 0" to="0 360 0" dur="1200" easing="linear" begin="start-ar" delay="1600" loop="true"></a-animation>
                 </a-entity>
                 
+                <!-- Кнопка "Приєднатись до AR_HUB" (Telegram) -->
                 <a-entity class="interactive" position="0 0 0" rotation="0 0 0"
                     onclick="window.open('https://t.me/+Ck0ua_cmlI84Yjcy', '_blank');"
                     event-set__mouseenter="scale: 1.15 1.15 1.15; material.color: #00FFFF"
@@ -166,11 +181,12 @@
                 </a-entity>
             </a-entity>
 
+            <!-- Модальне вікно: Відео -->
             <a-entity id="video-modal" visible="false" position="0 0 0"
                 animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
                 animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
                 <a-plane position="0 0 0" height="1" width="1.6" rotation="0 0 0" color="#333" opacity="0.95">
-                    <a-video src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" autoplay="true" loop="true" muted="true" position="0 0 0.001" height="0.8" width="1.4"></a-video>
+                    <a-video src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" autoplay="true" loop="true" position="0 0 0.001" height="0.8" width="1.4"></a-video>
                     <a-plane class="interactive" position="-0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF4500"
                         event-set__mouseenter="scale: 1.1 1.1 1.1"
                         event-set__mouseleave="scale: 1 1 1"
@@ -190,6 +206,7 @@
                 </a-plane>
             </a-entity>
 
+            <!-- Модальне вікно: Гра -->
             <a-entity id="game-modal" visible="false" position="0 0 0"
                 animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
                 animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
@@ -204,12 +221,14 @@
                 </a-plane>
             </a-entity>
 
+            <!-- Модальне вікно: Соцмережі -->
             <a-entity id="social-modal" visible="false" position="0 0 0"
                 animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
                 animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
                 <a-plane position="0 0 0" height="1.2" width="1.6" color="#333" opacity="0.95">
                     <a-text value="📱 Соцмережі:" align="left" color="#fff" width="1.5" position="-0.7 0.45 0.01" font="exo2bold"></a-text>
                     
+                    <!-- YouTube -->
                     <a-plane class="interactive" position="-0.4 0.25 0.01" height="0.2" width="1" 
                         material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png; transparent: true; alphaTest: 0.1"
                         event-set__mouseenter="scale: 1.05 1.05 1.05"
@@ -219,6 +238,7 @@
                         onclick="window.open('https://www.youtube.com/@23SmartLessa32', '_blank');">
                     </a-plane>
                     
+                    <!-- Google Sites -->
                     <a-plane class="interactive" position="-0.4 -0.15 0.01" height="0.2" width="1" 
                         material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png; transparent: true; alphaTest: 0.1"
                         event-set__mouseenter="scale: 1.05 1.05 1.05"
@@ -228,6 +248,7 @@
                         onclick="window.open('https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0', '_blank');">
                     </a-plane>
                     
+                    <!-- Instagram -->
                     <a-plane class="interactive" position="-0.4 -0.35 0.01" height="0.2" width="1" 
                         material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png; transparent: true; alphaTest: 0.1"
                         event-set__mouseenter="scale: 1.05 1.05 1.05"
@@ -237,6 +258,7 @@
                         onclick="window.open('https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85', '_blank');">
                     </a-plane>
                     
+                    <!-- Кнопка закриття -->
                     <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF4500"
                         event-set__mouseenter="scale: 1.1 1.1 1.1"
                         event-set__mouseleave="scale: 1 1 1"
@@ -252,62 +274,4 @@
 
     <script>
         const loader = document.querySelector('#loader');
-        const targetEntity = document.querySelector('[mindar-image-target]');
-        const mainPhotoPlane = document.querySelector('#main-photo-plane');
-        const interactiveElements = document.querySelector('#interactive-elements');
-        const portal = document.querySelector('#portal');
-        const videoModal = document.querySelector('#video-modal');
-        const gameModal = document.querySelector('#game-modal');
-        const socialModal = document.querySelector('#social-modal');
-
-        if (!navigator.xr) {
-            loader.textContent = 'Помилка: Ваш пристрій не підтримує AR';
-            console.error('WebXR не підтримується');
-        }
-
-        fetch('https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind')
-            .catch(() => {
-                loader.textContent = 'Помилка: Не вдалося завантажити маркер';
-                console.error('Не вдалося завантажити .mind файл');
-            });
-
-        const scene = document.querySelector('a-scene');
-        scene.addEventListener('arError', () => {
-            loader.textContent = 'Помилка: Не вдалося ініціалізувати AR';
-            console.error('Помилка ініціалізації AR');
-        });
-
-        targetEntity.addEventListener('targetFound', () => {
-            console.log('✅ Маркер знайдено!');
-            loader.style.display = 'none';
-            mainPhotoPlane.setAttribute('visible', 'true');
-            portal.setAttribute('visible', 'true');
-            interactiveElements.setAttribute('visible', 'true');
-            mainPhotoPlane.emit('start-ar');
-            portal.emit('start-ar');
-            interactiveElements.emit('start-ar');
-        });
-
-        targetEntity.addEventListener('targetLost', () => {
-            console.log('❌ Маркер втрачено!');
-            loader.style.display = 'flex';
-            mainPhotoPlane.setAttribute('visible', 'false');
-            portal.setAttribute('visible', 'false');
-            interactiveElements.setAttribute('visible', 'false');
-            videoModal.setAttribute('visible', 'false');
-            gameModal.setAttribute('visible', 'false');
-            socialModal.setAttribute('visible', 'false');
-        });
-
-        // Цей код зупиняє відео, коли модальне вікно закривається, 
-        // щоб відео не продовжувало відтворюватися у фоновому режимі
-        videoModal.addEventListener('hide-modal', () => {
-            const videoEl = document.querySelector('a-video');
-            if (videoEl && videoEl.components.video.video) {
-                videoEl.components.video.video.pause();
-                videoEl.components.video.video.currentTime = 0;
-            }
-        });
-    </script>
-</body>
-</html>
+        const
