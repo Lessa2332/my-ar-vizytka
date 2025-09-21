@@ -23,15 +23,16 @@
 
     <a-entity mindar-image-target="targetIndex: 0">
       
-      <a-plane position="0 0 0" height="1" width="1.6" rotation="90 0 0" color="#f0f0f0" side="double">
+      <!-- Основна площина з фоном -->
+      <a-plane position="0 0 0.01" height="1.2" width="1.8" rotation="90 0 0" color="#ffffff" opacity="0.8" side="double">
         <a-image src="assets/images/photo.jpg" position="0 0.35 0.005" height="0.4" width="0.4"></a-image>
-        <a-text value="Олеся Олександрівна" position="0 0.05 0.005" align="center" color="#000" width="2"></a-text>
-        <a-text value="Навчаю сучасно. ШІ-асистент у дії." position="0 -0.1 0.005" align="center" color="#555" width="2"></a-text>
+        <a-text value="Олеся Олександрівна" position="0 0.05 0.005" align="center" color="#000" width="1.6"></a-text>
+        <a-text value="Навчаю сучасно. ШІ-асистент у дії." position="0 -0.1 0.005" align="center" color="#555" width="1.6"></a-text>
       </a-plane>
 
       <!-- Кнопка Портфоліо -->
       <a-plane id="video-gallery-btn" class="interactive-plane"
-               position="-0.4 -0.4 0.005"
+               position="-0.4 -0.4 0.02"
                rotation="90 0 0"
                height="0.2"
                width="0.7"
@@ -42,7 +43,7 @@
       
       <!-- Кнопка Гра -->
       <a-plane id="game-btn" class="interactive-plane"
-               position="0.4 -0.4 0.005"
+               position="0.4 -0.4 0.02"
                rotation="90 0 0"
                height="0.2"
                width="0.7"
@@ -53,7 +54,7 @@
       
       <!-- Кнопка Events Handling -->
       <a-plane id="events-btn" class="interactive-plane"
-               position="0 -0.7 0.005"
+               position="0 -0.7 0.02"
                rotation="90 0 0"
                height="0.2"
                width="0.7"
@@ -63,16 +64,16 @@
       </a-plane>
 
       <!-- Модалка для Портфоліо -->
-      <a-entity id="video-modal" position="0 0 0.02" rotation="90 0 0"
-                animation__open="property: position; to: 0 0 0.8; dur: 500; easing: easeOutQuad; startEvents: open-modal;"
-                animation__close="property: position; to: 0 0 0.02; dur: 500; easing: easeOutQuad; startEvents: close-modal;"
+      <a-entity id="video-modal" position="0 0 0.03" rotation="90 0 0"
+                animation__open="property: position; to: 0 0 0.6; dur: 500; easing: easeOutQuad; startEvents: open-modal;"
+                animation__close="property: position; to: 0 0 0.03; dur: 500; easing: easeOutQuad; startEvents: close-modal;"
                 scale="0 0 0"
-                animation__scalein="property: scale; from: 0 0 0; to: 1 1 1; dur: 300; startEvents: open-modal"
-                animation__scaleout="property: scale; from: 1 1 1; to: 0 0 0; dur: 300; startEvents: close-modal">
-        <a-plane height="1.2" width="1.6" color="#333" opacity="0.9">
-          <a-video src="assets/videos/lesa.mp4" autoplay="true" position="0 0 0.001" height="0.8" width="1.4"></a-video>
-          <a-text value="Якщо ви зробили щось вражаюче, поділіться з нами!" align="center" color="#fff" width="1.8" position="0 0.5 0.01" wrap-count="30"></a-text>
-          <a-plane class="interactive-plane" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('video-modal').emit('close-modal');">
+                animation__scalein="property: scale; from: 0 0 0; to: 0.9 0.9 0.9; dur: 300; startEvents: open-modal"
+                animation__scaleout="property: scale; from: 0.9 0.9 0.9; to: 0 0 0; dur: 300; startEvents: close-modal">
+        <a-plane height="1.0" width="1.4" color="#333" opacity="0.9">
+          <a-video src="assets/videos/lesa.mp4" autoplay="true" position="0 0 0.001" height="0.7" width="1.2"></a-video>
+          <a-text value="Якщо ви зробили щось вражаюче, поділіться з нами!" align="center" color="#fff" width="1.3" position="0 0.4 0.01" wrap-count="25"></a-text>
+          <a-plane class="interactive-plane" position="0.6 -0.45 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('video-modal').emit('close-modal');">
             <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01"></a-text>
           </a-plane>
         </a-plane>
@@ -80,34 +81,34 @@
 
       <!-- Модалка для Гри -->
       <a-entity id="game-modal" visible="false">
-        <a-plane position="0 0 0.02" height="1.2" width="1.6" color="#333" opacity="0.9">
-          <a-text value="Гра: у розробці. \n Скоро тут з'явиться квест!" align="center" color="#fff" width="2" position="0 0 0.01"></a-text>
-          <a-plane class="interactive-plane" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('game-modal').setAttribute('visible', 'false');">
+        <a-plane position="0 0 0.03" height="1.0" width="1.4" color="#333" opacity="0.9">
+          <a-text value="Гра: у розробці. \n Скоро тут з'явиться квест!" align="center" color="#fff" width="1.3" position="0 0 0.01"></a-text>
+          <a-plane class="interactive-plane" position="0.6 -0.45 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('game-modal').setAttribute('visible', 'false');">
             <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01"></a-text>
           </a-plane>
         </a-plane>
       </a-entity>
 
       <!-- Модалка для Events Handling -->
-      <a-entity id="events-modal" visible="false" position="0 0 0.02" rotation="90 0 0"
-                animation__open="property: position; to: 0 0 0.8; dur: 500; easing: easeOutQuad; startEvents: open-modal;"
-                animation__close="property: position; to: 0 0 0.02; dur: 500; easing: easeOutQuad; startEvents: close-modal;"
+      <a-entity id="events-modal" visible="false" position="0 0 0.03" rotation="90 0 0"
+                animation__open="property: position; to: 0 0 0.6; dur: 500; easing: easeOutQuad; startEvents: open-modal;"
+                animation__close="property: position; to: 0 0 0.03; dur: 500; easing: easeOutQuad; startEvents: close-modal;"
                 scale="0 0 0"
-                animation__scalein="property: scale; from: 0 0 0; to: 1 1 1; dur: 300; startEvents: open-modal"
-                animation__scaleout="property: scale; from: 1 1 1; to: 0 0 0; dur: 300; startEvents: close-modal">
-        <a-plane height="1.2" width="1.6" color="#333" opacity="0.9">
-          <a-text value="Обробка подій\n\nТут ви можете поділитися своїми досягненнями!\n- Участь у проектах\n- Створення AR-контенту\n- Креативні ідеї\nНапишіть нам у соцмережах!" align="left" color="#fff" width="1.5" position="-0.7 0.3 0.01" wrap-count="25"></a-text>
-          <a-plane class="interactive-plane" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('events-modal').emit('close-modal');">
+                animation__scalein="property: scale; from: 0 0 0; to: 0.9 0.9 0.9; dur: 300; startEvents: open-modal"
+                animation__scaleout="property: scale; from: 0.9 0.9 0.9; to: 0 0 0; dur: 300; startEvents: close-modal">
+        <a-plane height="1.0" width="1.4" color="#333" opacity="0.9">
+          <a-text value="Обробка подій\n\nТут ви можете поділитися своїми досягненнями!\n- Участь у проектах\n- Створення AR-контенту\n- Креативні ідеї\nНапишіть нам у соцмережах!" align="left" color="#fff" width="1.3" position="-0.6 0.2 0.01" wrap-count="25"></a-text>
+          <a-plane class="interactive-plane" position="0.6 -0.45 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('events-modal').emit('close-modal');">
             <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01"></a-text>
           </a-plane>
         </a-plane>
       </a-entity>
 
       <!-- Соцмережі -->
-      <a-plane class="interactive-plane" position="-0.6 0.7 0.005" height="0.2" width="0.2" src="assets/images/web-icon.png" onclick="window.open('https://sites.google.com/view/questaria/%D0%BA%D0%B0%D1%80%D1%82%D0%BA%D0%B8', '_blank');"></a-plane>
-      <a-plane class="interactive-plane" position="-0.2 0.7 0.005" height="0.2" width="0.2" src="assets/images/tg-icon.png" onclick="window.open('https://t.me/your-telegram-link', '_blank');"></a-plane>
-      <a-plane class="interactive-plane" position="0.2 0.7 0.005" height="0.2" width="0.2" src="assets/images/yt-icon.png" onclick="window.open('https://www.youtube.com/your-channel', '_blank');"></a-plane>
-      <a-plane class="interactive-plane" position="0.6 0.7 0.005" height="0.2" width="0.2" src="assets/images/insta-icon.png" onclick="window.open('https://www.instagram.com/your-instagram', '_blank');"></a-plane>
+      <a-plane class="interactive-plane" position="-0.6 0.7 0.02" height="0.2" width="0.2" src="assets/images/web-icon.png" onclick="window.open('https://sites.google.com/view/questaria/%D0%BA%D0%B0%D1%80%D1%82%D0%BA%D0%B8', '_blank');"></a-plane>
+      <a-plane class="interactive-plane" position="-0.2 0.7 0.02" height="0.2" width="0.2" src="assets/images/tg-icon.png" onclick="window.open('https://t.me/your-telegram-link', '_blank');"></a-plane>
+      <a-plane class="interactive-plane" position="0.2 0.7 0.02" height="0.2" width="0.2" src="assets/images/yt-icon.png" onclick="window.open('https://www.youtube.com/your-channel', '_blank');"></a-plane>
+      <a-plane class="interactive-plane" position="0.6 0.7 0.02" height="0.2" width="0.2" src="assets/images/insta-icon.png" onclick="window.open('https://www.instagram.com/your-instagram', '_blank');"></a-plane>
 
     </a-entity>
   </a-scene>
