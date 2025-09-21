@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,9 +12,7 @@
             justify-content: center; align-items: center; color: #FF4500; font-size: 1.5em;
         }
     </style>
-
     <script>
-        // Компонент для гри-вікторини
         AFRAME.registerComponent('quiz-game', {
             init: function () {
                 this.questions = [
@@ -50,7 +47,6 @@
                 ctx.fillStyle = '#fff';
                 ctx.textAlign = 'center';
                 ctx.font = '50px Arial';
-                
                 let q = this.questions[this.currentQ];
                 if (!q) {
                     ctx.fillText(`Вікторина завершена!`, w / 2, h * 0.1);
@@ -63,7 +59,6 @@
                 ctx.fillRect(w * 0.05, h * 0.4, w * 0.28, h * 0.1);
                 ctx.fillRect(w * 0.37, h * 0.4, w * 0.28, h * 0.1);
                 ctx.fillRect(w * 0.69, h * 0.4, w * 0.28, h * 0.1);
-                
                 ctx.fillStyle = '#fff';
                 ctx.font = '30px Arial';
                 ctx.fillText(q.a[0], w * 0.19, h * 0.45);
@@ -94,29 +89,44 @@
             
             <a-plane id="main-photo-plane" position="0 0 0" height="1" width="1" 
                 material="src: https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg" 
+                scale="1 1 1">
+            </a-plane>
+
+            <a-plane id="portal" position="0 0 0.05" height="0.3" width="0.3" 
+                material="color: #00ffcc; opacity: 0.5" 
                 scale="0 0 0" visible="false">
-                <a-animation attribute="scale" from="0 0 0" to="1 1 1" dur="1000" easing="ease-in-out" begin="start-ar"></a-animation>
+                <a-animation attribute="scale" from="0 0 0" to="1 1 1" dur="500" easing="ease-in-out" begin="start-ar"></a-animation>
+                <a-animation attribute="scale" from="1 1 1" to="1.1 1.1 1.1" dur="1500" direction="alternate" loop="true" easing="ease-in-out" delay="500"></a-animation>
             </a-plane>
 
             <a-entity id="interactive-elements" position="0 0 0.1" visible="false">
 
-                <a-plane class="interactive" position="0.5 0.5 0" height="0.4" width="0.4" 
-                    material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png"
-                    onclick="document.getElementById('video-modal').emit('show-modal');">
-                    <a-animation attribute="position" from="0 0 0" to="0.5 0.5 0" dur="800" easing="ease-in-out" begin="start-ar"></a-animation>
-                </a-plane>
+                <a-entity class="interactive" position="0 0 0" rotation="0 0 0"
+                    onclick="document.getElementById('video-modal').emit('show-modal');"
+                    event-set__mouseenter="scale: 1.1 1.1 1.1"
+                    event-set__mouseleave="scale: 1 1 1">
+                    <a-plane height="0.4" width="0.4" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png; transparent: true; alphaTest: 0.1"></a-plane>
+                    <a-text value="Відео" align="center" width="1" position="0 -0.3 0" color="#fff"></a-text>
+                    <a-animation attribute="position" from="0 0 0" to="0.5 0.5 0.2" dur="1200" easing="ease-in-out" begin="start-ar" delay="800"></a-animation>
+                </a-entity>
                 
-                <a-plane class="interactive" position="-0.5 0.5 0" height="0.4" width="0.4" 
-                    material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png"
-                    onclick="document.getElementById('game-modal').emit('show-modal');">
-                    <a-animation attribute="position" from="0 0 0" to="-0.5 0.5 0" dur="800" easing="ease-in-out" begin="start-ar" delay="200"></a-animation>
-                </a-plane>
+                <a-entity class="interactive" position="0 0 0" rotation="0 0 0"
+                    onclick="document.getElementById('game-modal').emit('show-modal');"
+                    event-set__mouseenter="scale: 1.1 1.1 1.1"
+                    event-set__mouseleave="scale: 1 1 1">
+                    <a-plane height="0.4" width="0.4" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png; transparent: true; alphaTest: 0.1"></a-plane>
+                    <a-text value="Гра" align="center" width="1" position="0 -0.3 0" color="#fff"></a-text>
+                    <a-animation attribute="position" from="0 0 0" to="-0.5 0.5 0.2" dur="1200" easing="ease-in-out" begin="start-ar" delay="1200"></a-animation>
+                </a-entity>
                 
-                <a-plane class="interactive" position="0.5 -0.5 0" height="0.4" width="0.4" 
-                    material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png"
-                    onclick="document.getElementById('social-modal').emit('show-modal');">
-                    <a-animation attribute="position" from="0 0 0" to="0.5 -0.5 0" dur="800" easing="ease-in-out" begin="start-ar" delay="400"></a-animation>
-                </a-plane>
+                <a-entity class="interactive" position="0 0 0" rotation="0 0 0"
+                    onclick="document.getElementById('social-modal').emit('show-modal');"
+                    event-set__mouseenter="scale: 1.1 1.1 1.1"
+                    event-set__mouseleave="scale: 1 1 1">
+                    <a-plane height="0.4" width="0.4" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png; transparent: true; alphaTest: 0.1"></a-plane>
+                    <a-text value="Соцмережі" align="center" width="1" position="0 -0.3 0" color="#fff"></a-text>
+                    <a-animation attribute="position" from="0 0 0" to="0.5 -0.5 0.2" dur="1200" easing="ease-in-out" begin="start-ar" delay="1600"></a-animation>
+                </a-entity>
 
             </a-entity>
 
@@ -143,10 +153,10 @@
                 animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
                 <a-plane position="0 0 0" height="1.2" width="1.6" color="#333" opacity="0.9">
                     <a-text value="Соцмережі:" align="left" color="#fff" width="1.5" position="-0.7 0.45 0.01"></a-text>
-                    <a-plane class="interactive" position="-0.4 0.25 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png" onclick="window.open('https://www.youtube.com/@23SmartLessa32', '_blank');"></a-plane>
-                    <a-plane class="interactive" position="-0.4 0.05 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png" onclick="window.open('https://t.me/+Ck0ua_cmlI84Yjcy', '_blank');"></a-plane>
-                    <a-plane class="interactive" position="-0.4 -0.15 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png" onclick="window.open('https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0', '_blank');"></a-plane>
-                    <a-plane class="interactive" position="-0.4 -0.35 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png" onclick="window.open('https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85', '_blank');"></a-plane>
+                    <a-plane class="interactive" position="-0.4 0.25 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png; transparent: true; alphaTest: 0.1" onclick="window.open('https://www.youtube.com/@23SmartLessa32', '_blank');"></a-plane>
+                    <a-plane class="interactive" position="-0.4 0.05 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png; transparent: true; alphaTest: 0.1" onclick="window.open('https://t.me/+Ck0ua_cmlI84Yjcy', '_blank');"></a-plane>
+                    <a-plane class="interactive" position="-0.4 -0.15 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png; transparent: true; alphaTest: 0.1" onclick="window.open('https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0', '_blank');"></a-plane>
+                    <a-plane class="interactive" position="-0.4 -0.35 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png; transparent: true; alphaTest: 0.1" onclick="window.open('https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85', '_blank');"></a-plane>
                     <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('social-modal').emit('hide-modal');">
                         <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01"></a-text>
                     </a-plane>
@@ -160,14 +170,17 @@
         const targetEntity = document.querySelector('[mindar-image-target]');
         const mainPhotoPlane = document.querySelector('#main-photo-plane');
         const interactiveElements = document.querySelector('#interactive-elements');
-
+        const portal = document.querySelector('#portal');
+        
         targetEntity.addEventListener('targetFound', () => {
             console.log('Маркер знайдено!');
             loader.style.display = 'none';
             mainPhotoPlane.setAttribute('visible', 'true');
+            portal.setAttribute('visible', 'true');
             interactiveElements.setAttribute('visible', 'true');
-            // Запускаємо анімації для всіх елементів після знаходження маркера
+            
             mainPhotoPlane.emit('start-ar');
+            portal.emit('start-ar');
             interactiveElements.emit('start-ar');
         });
 
@@ -175,9 +188,9 @@
             console.log('Маркер втрачено!');
             loader.style.display = 'flex';
             mainPhotoPlane.setAttribute('visible', 'false');
+            portal.setAttribute('visible', 'false');
             interactiveElements.setAttribute('visible', 'false');
         });
     </script>
 </body>
 </html>
-
