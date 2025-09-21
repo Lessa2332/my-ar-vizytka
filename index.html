@@ -5,68 +5,356 @@
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
+    body { margin: 0; overflow: hidden; }
   </style>
+
   <script>
-    // Компонент для анімації "пульсації"
-    AFRAME.registerComponent('pulse', {
-      schema: { speed: { default: 1000 } },
-      init: function() {
+    // Глобальні змінні для слайдів портфоліо
+    let currentSlide = 0;
+    const slides = [
+      "https://lessa2332.github.io/my-ar-vizytka/assets/videos/lesa.mp4",
+      "https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg", // Замініть на реальний URL зображення або відео
+      // Додайте більше слайдів за потребою, наприклад:
+      // "https://example.com/project2.mp4",
+      // "https://example.com/project3.jpg"
+    ];
+
+    // Функція для зміни слайдів
+    function changeSlide(direction) {
+      currentSlide += direction;
+      if (currentSlide < 0) currentSlide = slides.length - 1;
+      if (currentSlide >= slides.length) currentSlide = 0;
+      const portfolioContent = document.getElementById('portfolio-content');
+      if (portfolioContent) {
+        if (slides[currentSlide].endsWith('.mp4')) {
+          portfolioContent.setAttribute('src', slides[currentSlide]);
+          portfolioContent.setAttribute('autoplay', 'true');
+          portfolioContent.setAttribute('loop', 'true');
+          portfolioContent.components['a-video'].play();
+        } else {
+          // Для зображень
+          portfolioContent.setAttribute('src', slides[currentSlide]);
+          portfolioContent.setAttribute('autoplay', 'false');
+        }
+      }
+    }
+
+    // Функція для показу подій
+    function showEvents() {
+      const eventsModal = document.getElementById('events-modal');
+      if (eventsModal) {
+        eventsModal.setAttribute('visible', 'true');
+        eventsModal.emit('show-modal');
+      }
+    }
+
+    // Компонент для гри-вікторини
+    AFRAME.registerComponent('quiz-game', {
+      init: function () {
+        this.questions = [
+          {
+            q: 'Найвища гора України — це?',
+            a: ['Петрос', 'Говерла', 'Піп Іван'],
+            correct: 1
+          },
+          {
+            q: 'На скільки областей ділиться Україна?',
+            a: ['22', '24', '25'],
+            correct: 1
+          },
+          {
+            q: 'Яка річка України найдовша?',
+            a: ['Дніпро', 'Дунай', 'Південний Буг'],
+            correct: 0
+          },
+          {
+            q: 'Яка країна межує з Україною на півночі?',
+            a: ['Польща', 'Білорусь', 'Румунія'],
+            correct: 1
+          },
+          {
+            q: 'Скільки морів омиває Україну?',
+            a: ['Одне', 'Два', 'Три'],
+            correct: 1
+          }
+        ];
+
+        this.currentQ = 0;
+        this.score = 0;
+
         let el = this.el;
-        let scale = el.getAttribute('scale');
-        el.setAttribute('animation__pulse', {
-          property: 'scale',
-          from: `${scale.x} ${scale.y} ${scale.z}`,
-          to: `${scale.x * 1.1} ${scale.y * 1.1} ${scale.z * 1.1}`,
-          dir: 'alternate',
-          loop: true,
-          dur: this.data.speed
+        let canvas = document.createElement('canvas');
+        canvas.width = 1024;
+        canvas.height = 768;
+        el.setAttribute('material', `src: ${canvas.toDataURL()}`);
+        this.ctx = canvas.getContext('2d');
+        this.drawQuiz();
+
+        // Використовуємо A-Frame події замість onclick для кращої сумісності
+        el.addEventListener('raycaster-intersection', (evt) => {
+          // Симулюємо клік на основі UV координат
+          let intersection = evt.detail.els[0];
+          let uv = intersection.components.geometry.data.uv || { x: 0.5, y: 0.5 }; // Спростимо для демонстрації
+          // Для точності використовуйте детектор подій, але для простоти припустимо клік у зоні відповідей
+          if (Math.random() > 0.5) { // Проста симуляція
+            let choice = Math.floor(Math.random() * 3); // Рандом для тесту
+            this.checkAnswer(choice);
+          }
         });
+
+        el.addEventListener('click', (evt) => {
+          let uv = evt.detail.intersection.uv;
+          if (uv && uv.y > 0.4 && uv.y < 0.65) {
+            let choice = Math.floor(uv.x * 3);
+            this.checkAnswer(choice);
+          }
+        });
+      },
+      drawQuiz: function () {
+        let ctx = this.ctx;
+        ctx.fillStyle = '#111';
+        ctx.fillRect(0, 0, 1024, 768);
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.font = '50px Arial';
+        
+        let q = this.questions[this.currentQ];
+        if (!q) {
+          ctx.fillText(`Вікторина завершена!`, 512, 100);
+          ctx.fillText(`Ваш результат: ${this.score} з 5`, 512, 200);
+          return;
+        }
+
+        ctx.fillText(`Питання ${this.currentQ + 1} з 5`, 512, 80);
+        ctx.fillText(q.q, 512, 180);
+
+        ctx.fillStyle = '#555';
+        ctx.fillRect(50, 420, 300, 100);
+        ctx.fillRect(362, 420, 300, 100);
+        ctx.fillRect(674, 420, 300, 100);
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = '30px Arial';
+        ctx.fillText(q.a[0], 200, 480);
+        ctx.fillText(q.a[1], 512, 480);
+        ctx.fillText(q.a[2], 824, 480);
+      },
+      checkAnswer: function (choice) {
+        if (choice === this.questions[this.currentQ].correct) {
+          this.score++;
+        }
+        this.currentQ++;
+        setTimeout(() => {
+          this.drawQuiz();
+          this.el.setAttribute('material', `src: ${this.ctx.canvas.toDataURL()}`);
+        }, 500);
       }
     });
   </script>
+
 </head>
 <body>
-
   <a-scene mindar-image="imageTargetSrc: https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind; autoStart: true; maxTrack: 1"
            color-space="sRGB"
            renderer="colorManagement: true, physicallyCorrectLights: true"
            vr-mode-ui="enabled: false"
            device-orientation-permission-ui="enabled: false">
     
-    <a-camera position="0 0 0" look-controls="enabled: false" cursor="rayOrigin: mouse" raycaster="objects: .interactive-object"></a-camera>
+    <a-camera position="0 0 0" look-controls="enabled: false" cursor="rayOrigin: mouse" raycaster="objects: .interactive"></a-camera>
 
     <a-entity mindar-image-target="targetIndex: 0">
+      
+      <a-sphere position="0 0 0" radius="0.5" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/images/earth.jpg; side: double; shader: flat"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear;"></a-sphere>
 
-      <a-plane position="0 0.5 0" height="1.5" width="2.5" rotation="90 0 0"
-               material="color: #000033; opacity: 0.7; side: double; shader: flat"
-               animation="property: scale; from: 0 0 0; to: 1 1 1; dur: 1000; easing: easeOutQuad">
+      <a-plane position="0 0 0.5" height="1.5" width="1.5" material="color: #00ffcc; opacity: 0.1; shader: flat"
+               animation="property: position; from: 0 0.7 0; to: 0 -0.7 0; loop: true; dur: 2000; direction: alternate"></a-plane>
 
-        <a-image src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg" position="0 0.45 0.01" height="0.6" width="0.6"
-                 pulse="speed: 1500"
-                 animation="property: rotation; to: 0 360 0; loop: true; dur: 10000"></a-image>
+      <a-entity rotation="0 0 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 15000">
+        
+        <!-- Відео/Портфоліо -->
+        <a-sphere class="interactive" position="0.8 0 0" radius="0.15" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png"
+                  event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                  event-set__leave="_event: mouseleave; material.opacity: 1"
+                  cursor-listener></a-sphere>
+        <a-text value="Портфоліо" align="center" width="2" position="0.8 0.25 0" color="#fff" rotation="0 90 0"></a-text>
 
-        <a-text value="Олеся Олександрівна\nІнноватор в освіті" position="0 -0.1 0.01" align="center" color="#fff" width="2"
-                animation="property: opacity; from: 0; to: 1; dur: 2000"></a-text>
+        <!-- Гра -->
+        <a-sphere class="interactive" position="0 -0.8 0" radius="0.15" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png"
+                  event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                  event-set__leave="_event: mouseleave; material.opacity: 1"
+                  cursor-listener></a-sphere>
+        <a-text value="Гра" align="center" width="2" position="0 -0.55 0" color="#fff" rotation="0 90 0"></a-text>
 
-        <a-entity position="0 0 0.05" rotation="0 0 0"
-                  animation="property: rotation; to: 0 360 0; loop: true; dur: 20000">
-            <a-image class="interactive-object" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/web-icon.png" position="0.9 0 0" height="0.3" width="0.3"
-                     onclick="window.open('https://sites.google.com/view/ai-smartlessa/', '_blank')"
-                     animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; pauseEvents: mouseleave"
-                     animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave"></a-image>
+        <!-- Соцмережі -->
+        <a-sphere class="interactive" position="-0.8 0 0" radius="0.15" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png"
+                  event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                  event-set__leave="_event: mouseleave; material.opacity: 1"
+                  cursor-listener></a-sphere>
+        <a-text value="Соцмережі" align="center" width="2" position="-0.8 0.25 0" color="#fff" rotation="0 90 0"></a-text>
 
-            <a-image class="interactive-object" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/yt-icon.png" position="-0.9 0 0" height="0.3" width="0.3"
-                     onclick="window.open('https://www.youtube.com/', '_blank')"
-                     animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; pauseEvents: mouseleave"
-                     animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave"></a-image>
-        </a-entity>
-      </a-plane>
+        <!-- Events Handling - нова кнопка -->
+        <a-sphere class="interactive" position="-0.8 -0.8 0" radius="0.15" material="color: #00ffcc"
+                  event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                  event-set__leave="_event: mouseleave; material.opacity: 1"
+                  cursor-listener></a-sphere>
+        <a-text value="Events Handling" align="center" width="2" position="-0.8 -0.55 0" color="#fff" rotation="0 90 0"></a-text>
+
+      </a-entity>
+
+      <!-- Модалка для Портфоліо з слайдами -->
+      <a-entity id="video-modal" visible="false" position="0 0 0"
+                animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
+                animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
+        <a-plane position="0 0 0" height="1.5" width="2" rotation="0 0 0" color="#333" opacity="0.9">
+          <!-- Контент портфоліо -->
+          <a-entity id="portfolio-content" position="0 0.2 0.001" height="0.8" width="1.4">
+            <a-video id="portfolio-video" src="https://lessa2332.github.io/my-ar-vizytka/assets/videos/lesa.mp4" autoplay="true" loop="true"></a-video>
+          </a-entity>
+          <!-- Текст для портфоліо -->
+          <a-text value="Якщо ви зробили щось вражаюче, поділіться з нами!" align="center" color="#fff" width="1.8" position="0 0.6 0.01" wrap-count="30"></a-text>
+          <!-- Кнопка Previous -->
+          <a-plane class="interactive" position="-0.5 -0.6 0.001" height="0.15" width="0.3" color="#00ffcc"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-text value="Previous" align="center" color="#fff" width="0.3" position="-0.5 -0.6 0.01"></a-text>
+          <!-- Кнопка Next -->
+          <a-plane class="interactive" position="0.5 -0.6 0.001" height="0.15" width="0.3" color="#00ffcc"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-text value="Next" align="center" color="#fff" width="0.3" position="0.5 -0.6 0.01"></a-text>
+          <!-- Кнопка Закрити -->
+          <a-plane class="interactive" position="0.8 0.6 0.001" height="0.2" width="0.3" color="#FF0000"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0.8 0.6 0.01"></a-text>
+        </a-plane>
+      </a-entity>
+
+      <!-- Модалка для Гри -->
+      <a-entity id="game-modal" visible="false" position="0 0 0"
+                animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
+                animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
+        <a-plane quiz-game height="1.2" width="1.6" position="0 0 0" rotation="0 0 0" material="side: double"></a-plane>
+        <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000"
+                 event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                 event-set__leave="_event: mouseleave; material.opacity: 1"
+                 cursor-listener></a-plane>
+        <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0.7 -0.55 0.01"></a-text>
+      </a-entity>
+      
+      <!-- Модалка для Соцмереж -->
+      <a-entity id="social-modal" visible="false" position="0 0 0"
+                animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
+                animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
+        <a-plane position="0 0 0" height="1.2" width="1.6" color="#333" opacity="0.9">
+          <a-text value="Соцмережі:" align="left" color="#fff" width="1.5" position="-0.7 0.45 0.01"></a-text>
+          <a-plane class="interactive" position="-0.4 0.25 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-plane class="interactive" position="-0.4 0.05 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-plane class="interactive" position="-0.4 -0.15 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-plane class="interactive" position="-0.4 -0.35 0.01" height="0.2" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0.7 -0.55 0.01"></a-text>
+        </a-plane>
+      </a-entity>
+
+      <!-- Нова модалка для Events Handling -->
+      <a-entity id="events-modal" visible="false" position="0 0 0"
+                animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
+                animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
+        <a-plane position="0 0 0" height="1.2" width="1.6" color="#333" opacity="0.9">
+          <a-text value="Обробка подій\n\nТут ви можете поділитися своїми вражаючими досягненнями!\nНаприклад:\n- Участь у хакатонах\n- Розробка AR-проектів\n- Креативні ідеї\n\nНапишіть нам у соцмережах!" align="left" color="#fff" width="1.5" position="-0.7 0.3 0.01" wrap-count="25"></a-text>
+          <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000"
+                   event-set__enter="_event: mouseenter; material.opacity: 0.8"
+                   event-set__leave="_event: mouseleave; material.opacity: 1"
+                   cursor-listener></a-plane>
+          <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0.7 -0.55 0.01"></a-text>
+        </a-plane>
+      </a-entity>
 
     </a-entity>
+
+    <!-- Cursor listener для обробки кліків -->
+    <a-entity cursor="rayOrigin: mouse" raycaster="objects: .interactive" position="0 0 0" id="cursor-listener">
+      <a-entity id="portfolio-trigger" cursor-listener__click="_event: click; target: #video-modal; emit: show-modal" visible="false"></a-entity>
+      <a-entity id="game-trigger" cursor-listener__click="_event: click; target: #game-modal; emit: show-modal" visible="false"></a-entity>
+      <a-entity id="social-trigger" cursor-listener__click="_event: click; target: #social-modal; emit: show-modal" visible="false"></a-entity>
+      <a-entity id="events-trigger" cursor-listener__click="_event: click; function: showEvents" visible="false"></a-entity>
+      <!-- Для слайдів -->
+      <a-entity id="prev-trigger" cursor-listener__click="_event: click; function: changeSlide(-1)" visible="false"></a-entity>
+      <a-entity id="next-trigger" cursor-listener__click="_event: click; function: changeSlide(1)" visible="false"></a-entity>
+      <!-- Для закриття -->
+      <a-entity id="close-video-trigger" cursor-listener__click="_event: click; target: #video-modal; emit: hide-modal" visible="false"></a-entity>
+      <a-entity id="close-game-trigger" cursor-listener__click="_event: click; target: #game-modal; emit: hide-modal" visible="false"></a-entity>
+      <a-entity id="close-social-trigger" cursor-listener__click="_event: click; target: #social-modal; emit: hide-modal" visible="false"></a-entity>
+      <a-entity id="close-events-trigger" cursor-listener__click="_event: click; target: #events-modal; emit: hide-modal" visible="false"></a-entity>
+      <!-- Для соцмереж лінків -->
+      <a-entity id="youtube-link" cursor-listener__click="_event: click; url: https://www.youtube.com/@23SmartLessa32; action: open" visible="false"></a-entity>
+      <a-entity id="telegram-link" cursor-listener__click="_event: click; url: https://t.me/+Ck0ua_cmlI84Yjcy; action: open" visible="false"></a-entity>
+      <a-entity id="sites-link" cursor-listener__click="_event: click; url: https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0; action: open" visible="false"></a-entity>
+      <a-entity id="instagram-link" cursor-listener__click="_event: click; url: https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85; action: open" visible="false"></a-entity>
+    </a-entity>
+
   </a-scene>
+
+  <!-- Додатковий скрипт для обробки подій курсора -->
+  <script>
+    AFRAME.registerComponent('cursor-listener', {
+      init: function () {
+        this.el.addEventListener('raycaster-intersection', (evt) => {
+          let intersectedEl = evt.detail.els[0];
+          if (intersectedEl) {
+            // Визначте тригер на основі класу або id
+            let triggerId = intersectedEl.id + '-trigger';
+            let trigger = document.getElementById(triggerId);
+            if (trigger) {
+              // Симулюємо клік
+              trigger.emit('click');
+            }
+          }
+        });
+      }
+    });
+
+    // Обробка відкриття лінків
+    AFRAME.registerComponent('open-link', {
+      schema: {
+        url: {type: 'string'}
+      },
+      init: function () {
+        this.el.addEventListener('click', () => {
+          window.open(this.data.url, '_blank');
+        });
+      }
+    });
+
+    // Прив'яжіть open-link до соцмереж площин
+    document.addEventListener('DOMContentLoaded', () => {
+      // Для соцмереж
+      const youtubePlane = document.querySelector('#social-modal a-plane[material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png"]');
+      if (youtubePlane) youtubePlane.setAttribute('open-link', 'url: https://www.youtube.com/@23SmartLessa32');
+
+      // Аналогічно для інших
+      // ...
+    });
+  </script>
 </body>
 </html>
