@@ -7,7 +7,6 @@
   <style>
     body { margin: 0; overflow: hidden; }
   </style>
-
   <script>
     // Компонент для гри-вікторини
     AFRAME.registerComponent('quiz-game', {
@@ -45,15 +44,15 @@
 
         let el = this.el;
         let canvas = document.createElement('canvas');
-        canvas.width = 1024;
-        canvas.height = 768;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         el.setAttribute('material', `src: ${canvas.toDataURL()}`);
         this.ctx = canvas.getContext('2d');
         this.drawQuiz();
 
         el.addEventListener('click', (evt) => {
           let uv = evt.detail.uv;
-          if (uv.y > 0.4 && uv.y < 0.65) {
+          if (uv && uv.y > 0.4 && uv.y < 0.65) {
             let choice = Math.floor(uv.x * 3);
             this.checkAnswer(choice);
           }
@@ -61,21 +60,22 @@
       },
       drawQuiz: function () {
         let ctx = this.ctx;
+        if (!ctx) return;
         ctx.fillStyle = '#111';
-        ctx.fillRect(0, 0, 1024, 768);
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'center';
         ctx.font = '50px Arial';
         
         let q = this.questions[this.currentQ];
         if (!q) {
-          ctx.fillText(`Вікторина завершена!`, 512, 100);
-          ctx.fillText(`Ваш результат: ${this.score} з 5`, 512, 200);
+          ctx.fillText(`Вікторина завершена!`, ctx.canvas.width / 2, 100);
+          ctx.fillText(`Ваш результат: ${this.score} з 5`, ctx.canvas.width / 2, 200);
           return;
         }
 
-        ctx.fillText(`Питання ${this.currentQ + 1} з 5`, 512, 80);
-        ctx.fillText(q.q, 512, 180);
+        ctx.fillText(`Питання ${this.currentQ + 1} з 5`, ctx.canvas.width / 2, 80);
+        ctx.fillText(q.q, ctx.canvas.width / 2, 180);
 
         ctx.fillStyle = '#555';
         ctx.fillRect(50, 420, 300, 100);
@@ -100,7 +100,8 @@
       }
     });
   </script>
-
+</head>
+<body>
   <a-scene mindar-image="imageTargetSrc: https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind; autoStart: true; maxTrack: 1"
            color-space="sRGB"
            renderer="colorManagement: true, physicallyCorrectLights: true"
@@ -111,7 +112,7 @@
 
     <a-entity mindar-image-target="targetIndex: 0">
       
-      <a-sphere position="0 0 0" radius="0.5" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg; side: double; shader: flat"
+      <a-sphere position="0 0 0" radius="0.5" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/images/earth.jpg; side: double; shader: flat"
                 animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear;"></a-sphere>
 
       <a-plane position="0 0 0.5" height="1.5" width="1.5" material="color: #00ffcc; opacity: 0.1; shader: flat"
