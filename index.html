@@ -102,8 +102,7 @@
   </script>
 </head>
 
-<body> <!-- ДОДАНО: Відсутній тег body -->
-
+<body>
   <a-scene mindar-image="imageTargetSrc: https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind; autoStart: true; maxTrack: 1"
            color-space="sRGB"
            renderer="colorManagement: true, physicallyCorrectLights: true"
@@ -130,7 +129,7 @@
                   onclick="document.getElementById('game-modal').emit('show-modal');"></a-sphere>
         <a-text value="Гра" align="center" width="2" position="0 -0.55 0" color="#fff" rotation="0 90 0"></a-text>
 
-        <a-sphere class="interactive" position="-0.8 0 0" radius="0.15" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png" <!-- ВИПРАВЛЕНО: було yotube.png -->
+        <a-sphere class="interactive" position="-0.8 0 0" radius="0.15" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png"
                   onclick="document.getElementById('social-modal').emit('show-modal');"></a-sphere>
         <a-text value="Соцмережі" align="center" width="2" position="-0.8 0.25 0" color="#fff" rotation="0 90 0"></a-text>
 
@@ -140,7 +139,7 @@
                 animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
                 animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
         <a-plane position="0 0 0" height="1" width="1.6" rotation="0 0 0" color="#333" opacity="0.9">
-          <a-video src="https://lessa2332.github.io/my-ar-vizytka/assets/videos/lesa.mp4" autoplay="true" loop="true" muted="true" position="0 0 0.001" height="0.8" width="1.4"></a-video> <!-- ДОДАНО: muted="true" -->
+          <a-video src="https://lessa2332.github.io/my-ar-vizytka/assets/videos/lesa.mp4" autoplay="true" loop="true" muted="true" position="0 0 0.001" height="0.8" width="1.4"></a-video>
           <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('video-modal').emit('hide-modal');">
             <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01"></a-text>
           </a-plane>
@@ -172,6 +171,6 @@
       </a-entity>
     </a-entity>
   </a-scene>
-
 </body>
 </html>
+
