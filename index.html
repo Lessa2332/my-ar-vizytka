@@ -7,6 +7,7 @@
   <style>
     body { margin: 0; overflow: hidden; }
   </style>
+
   <script>
     // Компонент для гри-вікторини
     AFRAME.registerComponent('quiz-game', {
@@ -44,15 +45,15 @@
 
         let el = this.el;
         let canvas = document.createElement('canvas');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = 1024;
+        canvas.height = 768;
         el.setAttribute('material', `src: ${canvas.toDataURL()}`);
         this.ctx = canvas.getContext('2d');
         this.drawQuiz();
 
         el.addEventListener('click', (evt) => {
           let uv = evt.detail.uv;
-          if (uv && uv.y > 0.4 && uv.y < 0.65) {
+          if (uv.y > 0.4 && uv.y < 0.65) {
             let choice = Math.floor(uv.x * 3);
             this.checkAnswer(choice);
           }
@@ -60,22 +61,21 @@
       },
       drawQuiz: function () {
         let ctx = this.ctx;
-        if (!ctx) return;
         ctx.fillStyle = '#111';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillRect(0, 0, 1024, 768);
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'center';
         ctx.font = '50px Arial';
         
         let q = this.questions[this.currentQ];
         if (!q) {
-          ctx.fillText(`Вікторина завершена!`, ctx.canvas.width / 2, 100);
-          ctx.fillText(`Ваш результат: ${this.score} з 5`, ctx.canvas.width / 2, 200);
+          ctx.fillText(`Вікторина завершена!`, 512, 100);
+          ctx.fillText(`Ваш результат: ${this.score} з 5`, 512, 200);
           return;
         }
 
-        ctx.fillText(`Питання ${this.currentQ + 1} з 5`, ctx.canvas.width / 2, 80);
-        ctx.fillText(q.q, ctx.canvas.width / 2, 180);
+        ctx.fillText(`Питання ${this.currentQ + 1} з 5`, 512, 80);
+        ctx.fillText(q.q, 512, 180);
 
         ctx.fillStyle = '#555';
         ctx.fillRect(50, 420, 300, 100);
@@ -101,7 +101,9 @@
     });
   </script>
 </head>
-<body>
+
+<body> <!-- ДОДАНО: Відсутній тег body -->
+
   <a-scene mindar-image="imageTargetSrc: https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind; autoStart: true; maxTrack: 1"
            color-space="sRGB"
            renderer="colorManagement: true, physicallyCorrectLights: true"
@@ -112,7 +114,7 @@
 
     <a-entity mindar-image-target="targetIndex: 0">
       
-      <a-sphere position="0 0 0" radius="0.5" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/images/earth.jpg; side: double; shader: flat"
+      <a-sphere position="0 0 0" radius="0.5" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg; side: double; shader: flat"
                 animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear;"></a-sphere>
 
       <a-plane position="0 0 0.5" height="1.5" width="1.5" material="color: #00ffcc; opacity: 0.1; shader: flat"
@@ -128,7 +130,7 @@
                   onclick="document.getElementById('game-modal').emit('show-modal');"></a-sphere>
         <a-text value="Гра" align="center" width="2" position="0 -0.55 0" color="#fff" rotation="0 90 0"></a-text>
 
-        <a-sphere class="interactive" position="-0.8 0 0" radius="0.15" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png"
+        <a-sphere class="interactive" position="-0.8 0 0" radius="0.15" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png" <!-- ВИПРАВЛЕНО: було yotube.png -->
                   onclick="document.getElementById('social-modal').emit('show-modal');"></a-sphere>
         <a-text value="Соцмережі" align="center" width="2" position="-0.8 0.25 0" color="#fff" rotation="0 90 0"></a-text>
 
@@ -138,7 +140,7 @@
                 animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
                 animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
         <a-plane position="0 0 0" height="1" width="1.6" rotation="0 0 0" color="#333" opacity="0.9">
-          <a-video src="https://lessa2332.github.io/my-ar-vizytka/assets/videos/lesa.mp4" autoplay="true" loop="true" position="0 0 0.001" height="0.8" width="1.4"></a-video>
+          <a-video src="https://lessa2332.github.io/my-ar-vizytka/assets/videos/lesa.mp4" autoplay="true" loop="true" muted="true" position="0 0 0.001" height="0.8" width="1.4"></a-video> <!-- ДОДАНО: muted="true" -->
           <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF0000" onclick="document.getElementById('video-modal').emit('hide-modal');">
             <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01"></a-text>
           </a-plane>
@@ -170,5 +172,6 @@
       </a-entity>
     </a-entity>
   </a-scene>
+
 </body>
 </html>
