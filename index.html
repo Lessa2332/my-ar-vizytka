@@ -39,15 +39,20 @@
 
             <a-plane src="#icon-play" position="-1.5 0 0.01" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="video-play-icon"></a-plane>
 
-            <a-plane src="#icon-goy" position="1.5 0 0" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="game-button"></a-plane>
+            <a-plane src="#icon-goy" position="0.75 0 0" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="game-button"></a-plane>
 
             <a-plane src="#icon-googlesites" position="-0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="googlesites-button" visible="false"></a-plane>
-            <a-plane src="#icon-goy" position="-0.2 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="goy-button" visible="false"></a-plane>
             <a-plane src="#icon-instagram" position="0 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="instagram-button" visible="false"></a-plane>
             <a-plane src="#icon-telegram" position="0.2 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="telegram-button" visible="false"></a-plane>
             <a-plane src="#icon-youtube" position="0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="youtube-button" visible="false"></a-plane>
+
+            <a-entity id="quiz-entity" position="0 0.5 0" scale="1 1 1" visible="false">
+                <a-plane id="quiz-plane" position="0 0 0" width="0.8" height="0.6" material="src: #quiz-canvas; transparent: true" rotation="0 0 0" class="clickable"></a-plane>
+            </a-entity>
         </a-entity>
     </a-scene>
+
+    <canvas id="quiz-canvas" width="400" height="300" style="display: none;"></canvas>
 
     <script>
         const scene = document.querySelector('a-scene');
@@ -55,8 +60,12 @@
         const videoPlayIcon = document.querySelector('#video-play-icon');
         const gameButton = document.querySelector('#game-button');
         const videoElement = document.querySelector('#main-video');
+        const quizEntity = document.querySelector('#quiz-entity');
+        const quizPlane = document.querySelector('#quiz-plane');
+        const quizCanvas = document.getElementById('quiz-canvas');
+        const ctx = quizCanvas.getContext('2d');
 
-        // Посилання на соціальні мережі
+        // Social media buttons
         const socialButtons = {
             'googlesites-button': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
             'instagram-button': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85',
@@ -64,7 +73,6 @@
             'youtube-button': 'https://www.youtube.com/@23SmartLessa32'
         };
 
-        // Дія для кліку на іконки соцмереж
         Object.keys(socialButtons).forEach(id => {
             const button = document.querySelector(`#${id}`);
             button.addEventListener('click', () => {
@@ -72,25 +80,16 @@
             });
         });
 
-        // Дія для кліку на ігрову іконку
-        gameButton.addEventListener('click', () => {
-             window.open('https://example.com/goy', '_blank'); // Замініть на реальне посилання на гру
-        });
-
-        // Виявлення цілі
         scene.addEventListener('targetFound', event => {
-            // Анімація для відео та іконки "Play"
             slideVideo.setAttribute('visible', true);
             slideVideo.setAttribute('animation', 'property: position; to: -0.75 0 0; dur: 1000; easing: easeInOutQuad');
 
             videoPlayIcon.setAttribute('visible', true);
             videoPlayIcon.setAttribute('animation', 'property: position; to: -0.75 0 0.01; dur: 1000; easing: easeInOutQuad');
 
-            // Анімація для кнопки "Game"
             gameButton.setAttribute('visible', true);
             gameButton.setAttribute('animation', 'property: position; to: 0.75 0 0; dur: 1000; easing: easeInOutQuad');
 
-            // Анімація для іконок соцмереж
             Object.keys(socialButtons).forEach(id => {
                 const button = document.querySelector(`#${id}`);
                 button.setAttribute('visible', true);
@@ -98,7 +97,6 @@
             });
         });
 
-        // Втрата цілі
         scene.addEventListener('targetLost', event => {
             slideVideo.setAttribute('visible', false);
             slideVideo.setAttribute('position', '-1.5 0 0');
@@ -114,9 +112,10 @@
                 const button = document.querySelector(`#${id}`);
                 button.setAttribute('visible', false);
             });
+
+            hideQuiz();
         });
 
-        // Запуск та зупинка відео
         videoPlayIcon.addEventListener('click', () => {
             videoElement.play();
             videoPlayIcon.setAttribute('visible', false);
@@ -124,6 +123,117 @@
 
         videoElement.addEventListener('ended', () => {
             videoPlayIcon.setAttribute('visible', true);
+        });
+
+        // Click on game button to start quiz
+        gameButton.addEventListener('click', () => {
+            startQuiz();
+        });
+
+        // Quiz logic
+        const questions = [
+            {
+                question: "Яка столиця України?",
+                options: ["Київ", "Львів", "Одеса", "Харків"],
+                answer: "Київ"
+            },
+            {
+                question: "Яка найдовша річка в Україні?",
+                options: ["Дніпро", "Дністер", "Південний Буг", "Дунай"],
+                answer: "Дніпро"
+            },
+            {
+                question: "Яке море омиває Україну на півдні?",
+                options: ["Чорне море", "Балтійське море", "Середземне море", "Каспійське море"],
+                answer: "Чорне море"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let feedback = '';
+        let feedbackColor = '';
+        let isQuizEnded = false;
+
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            feedback = '';
+            isQuizEnded = false;
+            quizEntity.setAttribute('visible', true);
+            drawQuiz();
+        }
+
+        function drawQuiz() {
+            ctx.clearRect(0, 0, 400, 300);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 400, 300);
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'left';
+
+            if (currentQuestion < questions.length) {
+                const q = questions[currentQuestion];
+                ctx.fillText(q.question, 20, 30);
+                q.options.forEach((opt, i) => {
+                    ctx.fillStyle = 'lightblue';
+                    ctx.fillRect(20, 50 + i * 60, 360, 40);
+                    ctx.fillStyle = 'black';
+                    ctx.fillText(opt, 30, 75 + i * 60);
+                });
+                if (feedback) {
+                    ctx.fillStyle = feedbackColor;
+                    ctx.fillText(feedback, 20, 280);
+                }
+            } else {
+                isQuizEnded = true;
+                ctx.fillText(`Гра завершена! Твій рахунок: ${score}/${questions.length}`, 20, 30);
+                ctx.fillStyle = 'green';
+                ctx.fillRect(100, 200, 200, 40);
+                ctx.fillStyle = 'white';
+                ctx.fillText('Завершити', 150, 225);
+            }
+        }
+
+        function checkAnswer(selected) {
+            const correct = questions[currentQuestion].answer;
+            if (selected === correct) {
+                score++;
+                feedback = 'Правильно!';
+                feedbackColor = 'green';
+            } else {
+                feedback = `Неправильно! Правильна відповідь: ${correct}`;
+                feedbackColor = 'red';
+            }
+            drawQuiz();
+            setTimeout(() => {
+                feedback = '';
+                currentQuestion++;
+                drawQuiz();
+            }, 2000);
+        }
+
+        function hideQuiz() {
+            quizEntity.setAttribute('visible', false);
+        }
+
+        quizPlane.addEventListener('click', (evt) => {
+            const uv = evt.detail.intersection.uv;
+            const clickX = uv.x * 400;
+            const clickY = (1 - uv.y) * 300;
+            if (currentQuestion < questions.length) {
+                if (clickX > 20 && clickX < 380 && clickY > 50 && clickY < 270) {
+                    const index = Math.floor((clickY - 50) / 60);
+                    if (index >= 0 && index < questions[currentQuestion].options.length) {
+                        const selected = questions[currentQuestion].options[index];
+                        checkAnswer(selected);
+                    }
+                }
+            } else if (isQuizEnded) {
+                if (clickX > 100 && clickX < 300 && clickY > 200 && clickY < 240) {
+                    hideQuiz();
+                }
+            }
         });
     </script>
 </body>
