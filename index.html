@@ -1,316 +1,330 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="AR-візитка-портфоліо">
-    <title>🎨Smart Lessa AR-візитка</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="AR-візитка-портфоліо">
+    <title>🎨Smart Lessa AR-візитка</title>
 
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 
-    <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-        a-scene { width: 100% !important; height: 100% !important; position: fixed; top: 0; left: 0; }
-        .arjs-loader {
-            height: 100%; width: 100%; position: absolute; top: 0; left: 0;
-            background: rgba(135, 206, 235, 0.9); z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: #FF4500; font-size: 1.8em; text-align: center; padding: 20px; box-sizing: border-box;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-        }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        .pulse { animation: pulse 1.5s infinite; }
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        a-scene { width: 100% !important; height: 100% !important; position: fixed; top: 0; left: 0; }
+        .arjs-loader {
+            height: 100%; width: 100%; position: absolute; top: 0; left: 0;
+            background: rgba(135, 206, 235, 0.9); z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: #FF4500; font-size: 1.8em; text-align: center; padding: 20px; box-sizing: border-box;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .pulse { animation: pulse 1.5s infinite; }
 
-        /* Стилі для вікторини */
-        .quiz-container {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 10001; background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px; padding: 25px; max-width: 90%; text-align: center;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-            display: none;
-        }
-        .quiz-question { font-size: 1.5em; margin-bottom: 20px; color: #333; }
-        .quiz-options button {
-            display: block; width: 100%; padding: 12px; margin-bottom: 10px;
-            border: 2px solid #4CAF50; border-radius: 10px;
-            background-color: #f0f0f0; cursor: pointer; font-size: 1.1em;
-            transition: background-color 0.3s;
-        }
-        .quiz-options button:hover { background-color: #e0e0e0; }
-        .quiz-options button.correct { background-color: #4CAF50; color: white; border-color: #4CAF50; }
-        .quiz-options button.incorrect { background-color: #f44336; color: white; border-color: #f44336; }
-        .quiz-result { margin-top: 20px; font-size: 1.3em; font-weight: bold; }
-        #close-quiz {
-            position: absolute; top: 10px; right: 10px; padding: 5px 10px;
-            cursor: pointer; border: none; background: #f44336; color: white;
-            border-radius: 5px; font-size: 1em;
-        }
-        @media (max-width: 400px) {
-            .quiz-question { font-size: 1.2em; }
-            .quiz-options button { font-size: 0.9em; padding: 8px; }
-        }
+        /* Стилі для вікторини */
+        .quiz-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 10001; background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px; padding: 25px; max-width: 90%; text-align: center;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            display: none;
+        }
+        .quiz-question { font-size: 1.5em; margin-bottom: 20px; color: #333; }
+        .quiz-options button {
+            display: block; width: 100%; padding: 12px; margin-bottom: 10px;
+            border: 2px solid #4CAF50; border-radius: 10px;
+            background-color: #f0f0f0; cursor: pointer; font-size: 1.1em;
+            transition: background-color 0.3s;
+        }
+        .quiz-options button:hover { background-color: #e0e0e0; }
+        .quiz-options button.correct { background-color: #4CAF50; color: white; border-color: #4CAF50; }
+        .quiz-options button.incorrect { background-color: #f44336; color: white; border-color: #f44336; }
+        .quiz-result { margin-top: 20px; font-size: 1.3em; font-weight: bold; }
+        #close-quiz {
+            position: absolute; top: 10px; right: 10px; padding: 5px 10px;
+            cursor: pointer; border: none; background: #f44336; color: white;
+            border-radius: 5px; font-size: 1em;
+        }
+        @media (max-width: 400px) {
+            .quiz-question { font-size: 1.2em; }
+            .quiz-options button { font-size: 0.9em; padding: 8px; }
+        }
 
-        /* Стиль для клікабельних елементів */
-        .clickable {
-            cursor: pointer;
-        }
-        .clickable:hover {
-            opacity: 0.8;
-        }
-    </style>
+        /* Стиль для клікабельних елементів */
+        .clickable {
+            cursor: pointer;
+        }
+        .clickable:hover {
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
-    <div class="arjs-loader" id="loader">
-        <div class="pulse">✨ Smart Lessa AR-візитка ✨</div>
-        <div style="margin-top: 20px; font-size: 1.2em;">Наведіть камеру на візитку! 😊</div>
-    </div>
+    <div class="arjs-loader" id="loader">
+        <div class="pulse">✨ Smart Lessa AR-візитка ✨</div>
+        <div style="margin-top: 20px; font-size: 1.2em;">Наведіть камеру на візитку! 😊</div>
+    </div>
 
-    <div id="quiz-container" class="quiz-container">
-        <button id="close-quiz" aria-label="Закрити вікторину">✖ Закрити</button>
-        <div class="quiz-question" id="quiz-question"></div>
-        <div class="quiz-options" id="quiz-options"></div>
-        <div class="quiz-result" id="quiz-result"></div>
-    </div>
+    <div id="quiz-container" class="quiz-container">
+        <button id="close-quiz" aria-label="Закрити вікторину">✖ Закрити</button>
+        <div class="quiz-question" id="quiz-question"></div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-result" id="quiz-result"></div>
+    </div>
 
-    <a-scene
-        mindar-image="imageTargetSrc: https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind; autoStart: true; maxTrack: 1;"
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false"
-        loading-screen="enabled: false"
-        embedded
-        renderer="colorManagement: true; physicallyCorrectLights: true;"
-    >
-        <a-assets timeout="30000">
-            <img id="photo-texture" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg">
-            <video id="lesa-video" src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" preload="auto" loop="false"></video>
-            <img id="youtube-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png">
-            <img id="telegram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png">
-            <img id="googlesites-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png">
-            <img id="instagram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png">
-            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png">
-            <img id="goy-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png">
-        </a-assets>
+    <a-scene
+        mindar-image="imageTargetSrc: https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind; autoStart: true; maxTrack: 1;"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        loading-screen="enabled: false"
+        embedded
+        renderer="colorManagement: true; physicallyCorrectLights: false;"
+    >
+        <!-- Освітлення для яскравості -->
+        <a-entity light="type: directional; color: #FFF; intensity: 2.0" position="0 1 1"></a-entity>
+        <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
 
-                <a-light type="directional" color="#FFFFFF" intensity="1.5" position="1 1 1"></a-light>
-        
-                <a-camera position="0 0 0" look-controls="enabled: false">
-            <a-cursor></a-cursor>
-        </a-camera>
+        <a-assets timeout="30000">
+            <img id="photo-texture" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg">
+            <video id="lesa-video" src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" preload="auto" loop="false"></video>
+            <img id="youtube-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png">
+            <img id="telegram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png">
+            <img id="googlesites-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png">
+            <img id="instagram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png">
+            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png">
+            <img id="goy-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png">
+        </a-assets>
 
-        <a-entity mindar-image-target="targetIndex: 0">
-            <a-image src="#photo-texture" position="0 0 -0.1" height="1.0" width="0.75" rotation="0 0 0"></a-image>
-            
-                                    <a-plane id="youtube-btn" class="clickable" width="0.2" height="0.2" position="0.5 -0.5 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1; emissive: #FFFFFF; emissiveIntensity: 0.5;" aria-label="Відкрити YouTube канал"></a-plane>
-            <a-plane id="telegram-btn" class="clickable" width="0.2" height="0.2" position="0.2 -0.5 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1; emissive: #FFFFFF; emissiveIntensity: 0.5;" aria-label="Приєднатися до Telegram"></a-plane>
-            <a-plane id="google-btn" class="clickable" width="0.2" height="0.2" position="-0.1 -0.5 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1; emissive: #FFFFFF; emissiveIntensity: 0.5;" aria-label="Відвідати Google Sites"></a-plane>
-            <a-plane id="instagram-btn" class="clickable" width="0.2" height="0.2" position="-0.4 -0.5 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1; emissive: #FFFFFF; emissiveIntensity: 0.5;" aria-label="Відкрити Instagram"></a-plane>
-            <a-plane id="play-video-btn" class="clickable" width="0.2" height="0.2" position="-0.7 -0.5 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1; emissive: #FFFFFF; emissiveIntensity: 0.5;" aria-label="Відтворити відео"></a-plane>
-            <a-plane id="quiz-btn" class="clickable" width="0.2" height="0.2" position="-1.0 -0.5 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1; emissive: #FFFFFF; emissiveIntensity: 0.5;" aria-label="Розпочати вікторину"></a-plane>
-            <a-video id="ar-video" src="#lesa-video" position="0 0.45 0.05" width="1.6" height="0.9" visible="false"></a-video>
-        </a-entity>
-    </a-scene>
+        <!-- Камера з підтримкою кліків -->
+        <a-camera
+            position="0 0 0"
+            look-controls="enabled: false"
+            cursor="rayOrigin: mouse; fuse: false"
+            raycaster="objects: .clickable; far: 10; interval: 100; useWorldCoordinates: true">
+        </a-camera>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const loader = document.getElementById('loader');
-            const sceneEl = document.querySelector('a-scene');
-            const targetEntity = document.querySelector('[mindar-image-target]');
-            const arVideoEl = document.getElementById('ar-video');
-            const playVideoBtn = document.getElementById('play-video-btn');
-            const quizBtn = document.getElementById('quiz-btn');
-            const quizContainer = document.getElementById('quiz-container');
-            const quizQuestionEl = document.getElementById('quiz-question');
-            const quizOptionsEl = document.getElementById('quiz-options');
-            const quizResultEl = document.getElementById('quiz-result');
-            const closeQuizBtn = document.getElementById('close-quiz');
+        <a-entity mindar-image-target="targetIndex: 0">
+            <!-- Фото (широке, під 16:9) -->
+            <a-image src="#photo-texture" position="0 0 -0.1" height="0.75" width="1.0" rotation="0 0 0"></a-image>
+            
+            <!-- Кнопки зверху (горизонтальний ряд) -->
+            <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.6 0.4 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Відкрити Instagram"></a-plane>
+            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.3 0.4 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
+            <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="0.0 0.4 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="Відкрити YouTube канал"></a-plane>
+            <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.3 0.4 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="Приєднатися до Telegram"></a-plane>
+            <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.6 0.4 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="Відвідати Google Sites"></a-plane>
+            
+            <!-- Кнопка вікторини знизу -->
+            <a-plane id="quiz-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати вікторину"></a-plane>
+            
+            <!-- Відео вище -->
+            <a-video id="ar-video" src="#lesa-video" position="0 0.8 0.05" width="1.6" height="0.9" visible="false" autoplay></a-video>
+        </a-entity>
+    </a-scene>
 
-            let isQuizActive = false;
-            let currentQuestionIndex = 0;
-            const quizData = [
-                {
-                    question: "Яке місто є столицею України?",
-                    options: ["Львів", "Одеса", "Київ", "Харків"],
-                    answer: "Київ"
-                },
-                {
-                    question: "Як називається головна річка України?",
-                    options: ["Дністер", "Дніпро", "Десна", "Дунай"],
-                    answer: "Дніпро"
-                },
-                {
-                    question: "Найвища гора України — це?",
-                    options: ["Петрос", "Говерла", "Піп Іван"],
-                    answer: "Говерла"
-                },
-                {
-                    question: "Скільки адміністративних областей має Україна?",
-                    options: ["22", "24", "25"],
-                    answer: "24"
-                },
-                {
-                    question: "Скільки морів омиває Україну?",
-                    options: ["Одне", "Два", "Три"],
-                    answer: "Два"
-                }
-            ];
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const loader = document.getElementById('loader');
+            const sceneEl = document.querySelector('a-scene');
+            const targetEntity = document.querySelector('[mindar-image-target]');
+            const arVideoEl = document.getElementById('ar-video');
+            const playVideoBtn = document.getElementById('play-video-btn');
+            const quizBtn = document.getElementById('quiz-btn');
+            const quizContainer = document.getElementById('quiz-container');
+            const quizQuestionEl = document.getElementById('quiz-question');
+            const quizOptionsEl = document.getElementById('quiz-options');
+            const quizResultEl = document.getElementById('quiz-result');
+            const closeQuizBtn = document.getElementById('close-quiz');
 
-            // Обробка помилок MindAR
-            sceneEl.addEventListener('arError', (err) => {
-                console.error('Помилка MindAR:', err);
-                alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення. / Failed to initialize AR. Check the marker or connection.');
-            });
+            let isQuizActive = false;
+            let currentQuestionIndex = 0;
+            const quizData = [
+                {
+                    question: "Яке місто є столицею України?",
+                    options: ["Львів", "Одеса", "Київ", "Харків"],
+                    answer: "Київ"
+                },
+                {
+                    question: "Як називається головна річка України?",
+                    options: ["Дністер", "Дніпро", "Десна", "Дунай"],
+                    answer: "Дніпро"
+                },
+                {
+                    question: "Найвища гора України — це?",
+                    options: ["Петрос", "Говерла", "Піп Іван"],
+                    answer: "Говерла"
+                },
+                {
+                    question: "Скільки адміністративних областей має Україна?",
+                    options: ["22", "24", "25"],
+                    answer: "24"
+                },
+                {
+                    question: "Скільки морів омиває Україну?",
+                    options: ["Одне", "Два", "Три"],
+                    answer: "Два"
+                }
+            ];
 
-            // Обробка завантаження активів
-            document.querySelector('a-assets').addEventListener('loaded', () => {
-                console.log('Усі активи завантажено успішно');
-            });
-            document.querySelector('a-assets').addEventListener('error', (err) => {
-                console.error('Помилка завантаження активів:', err);
-                alert('Не вдалося завантажити деякі ресурси. Перевірте підключення або файли. / Failed to load some resources. Check connection or files.');
-            });
+            // Обробка помилок MindAR
+            sceneEl.addEventListener('arError', (err) => {
+                console.error('Помилка MindAR:', err);
+                alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення. / Failed to initialize AR. Check the marker or connection.');
+            });
 
-            // Логіка вікторини
-            function startQuiz() {
-                isQuizActive = true;
-                quizContainer.style.display = 'block';
-                showQuestion();
-            }
+            // Обробка завантаження активів
+            document.querySelector('a-assets').addEventListener('loaded', () => {
+                console.log('Усі активи завантажено успішно');
+            });
+            document.querySelector('a-assets').addEventListener('error', (err) => {
+                console.error('Помилка завантаження активів:', err);
+                alert('Не вдалося завантажити деякі ресурси. Перевірте підключення або файли. / Failed to load some resources. Check connection or files.');
+            });
 
-            function showQuestion() {
-                const currentQuestion = quizData[currentQuestionIndex];
-                quizQuestionEl.textContent = currentQuestion.question;
-                quizOptionsEl.innerHTML = '';
-                quizResultEl.textContent = '';
-                currentQuestion.options.forEach(option => {
-                    const button = document.createElement('button');
-                    button.textContent = option;
-                    button.setAttribute('aria-label', `Варіант відповіді: ${option}`);
-                    button.addEventListener('click', () => checkAnswer(option));
-                    quizOptionsEl.appendChild(button);
-                });
-            }
+            // Логіка вікторини
+            function startQuiz() {
+                isQuizActive = true;
+                quizContainer.style.display = 'block';
+                showQuestion();
+            }
 
-            function checkAnswer(selectedOption) {
-                const currentQuestion = quizData[currentQuestionIndex];
-                const isCorrect = selectedOption === currentQuestion.answer;
-                
-                Array.from(quizOptionsEl.children).forEach(button => {
-                    button.disabled = true;
-                    if (button.textContent === currentQuestion.answer) {
-                        button.classList.add('correct');
-                    } else if (button.textContent === selectedOption) {
-                        button.classList.add('incorrect');
-                    }
-                });
+            function showQuestion() {
+                const currentQuestion = quizData[currentQuestionIndex];
+                quizQuestionEl.textContent = currentQuestion.question;
+                quizOptionsEl.innerHTML = '';
+                quizResultEl.textContent = '';
+                currentQuestion.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.setAttribute('aria-label', `Варіант відповіді: ${option}`);
+                    button.addEventListener('click', () => checkAnswer(option));
+                    quizOptionsEl.appendChild(button);
+                });
+            }
 
-                if (isCorrect) {
-                    quizResultEl.textContent = 'Правильно! ✅';
-                    setTimeout(() => {
-                        currentQuestionIndex++;
-                        if (currentQuestionIndex < quizData.length) {
-                            showQuestion();
-                        } else {
-                            quizResultEl.textContent = 'Вікторина завершена! Молодець! 🏆';
-                            setTimeout(() => {
-                                quizContainer.style.display = 'none';
-                                isQuizActive = false;
-                                currentQuestionIndex = 0;
-                            }, 2000);
-                        }
-                    }, 1500);
-                } else {
-                    quizResultEl.textContent = 'Неправильно. Спробуй ще раз. ❌';
-                    setTimeout(() => {
-                        quizResultEl.textContent = '';
-                        Array.from(quizOptionsEl.children).forEach(button => {
-                            button.disabled = false;
-                            button.classList.remove('correct', 'incorrect');
-                        });
-                    }, 1500);
-                }
-            }
+            function checkAnswer(selectedOption) {
+                const currentQuestion = quizData[currentQuestionIndex];
+                const isCorrect = selectedOption === currentQuestion.answer;
+                
+                Array.from(quizOptionsEl.children).forEach(button => {
+                    button.disabled = true;
+                    if (button.textContent === currentQuestion.answer) {
+                        button.classList.add('correct');
+                    } else if (button.textContent === selectedOption) {
+                        button.classList.add('incorrect');
+                    }
+                });
 
-            // Закриття вікторини
-            closeQuizBtn.addEventListener('click', () => {
-                quizContainer.style.display = 'none';
-                isQuizActive = false;
-                currentQuestionIndex = 0;
-            });
+                if (isCorrect) {
+                    quizResultEl.textContent = 'Правильно! ✅';
+                    setTimeout(() => {
+                        currentQuestionIndex++;
+                        if (currentQuestionIndex < quizData.length) {
+                            showQuestion();
+                        } else {
+                            quizResultEl.textContent = 'Вікторина завершена! Молодець! 🏆';
+                            setTimeout(() => {
+                                quizContainer.style.display = 'none';
+                                isQuizActive = false;
+                                currentQuestionIndex = 0;
+                            }, 2000);
+                        }
+                    }, 1500);
+                } else {
+                    quizResultEl.textContent = 'Неправильно. Спробуй ще раз. ❌';
+                    setTimeout(() => {
+                        quizResultEl.textContent = '';
+                        Array.from(quizOptionsEl.children).forEach(button => {
+                            button.disabled = false;
+                            button.classList.remove('correct', 'incorrect');
+                        });
+                    }, 1500);
+                }
+            }
 
-            // Обробники для посилань
-            const links = {
-                'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
-                'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
-                'google-btn': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
-                'instagram-btn': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85'
-            };
+            // Закриття вікторини
+            closeQuizBtn.addEventListener('click', () => {
+                quizContainer.style.display = 'none';
+                isQuizActive = false;
+                currentQuestionIndex = 0;
+            });
 
-            Object.keys(links).forEach(id => {
-                const el = document.getElementById(id);
-                el.addEventListener('click', () => {
-                    window.open(links[id], '_blank', 'noopener,noreferrer');
-                });
-            });
+            // Обробники для посилань — ВИПРАВЛЕНО: прибрано пробіли
+            const links = {
+                'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
+                'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
+                'google-btn': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
+                'instagram-btn': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85'
+            };
 
-            // Обробник для відео
-            playVideoBtn.addEventListener('click', () => {
-                if (arVideoEl) {
-                    arVideoEl.setAttribute('visible', true);
-                    const videoElement = arVideoEl.components.material.material.map.image;
-                    if (videoElement && typeof videoElement.play === 'function') {
-                        videoElement.play().catch(err => {
-                            console.error('Помилка відтворення відео:', err);
-                            alert('Не вдалося відтворити відео. Перевірте формат або підключення. / Failed to play video. Check format or connection.');
-                        });
-                    }
-                } else {
-                    console.error('Відеоелемент не знайдено!');
-                    alert('Відео недоступне. Перевірте ресурси. / Video unavailable. Check resources.');
-                }
-            });
+            Object.keys(links).forEach(id => {
+                const el = document.getElementById(id);
+                el.addEventListener('click', () => {
+                    window.open(links[id], '_blank', 'noopener,noreferrer');
+                });
+            });
 
-            // Логіка відстеження маркера
-            if (targetEntity) {
-                targetEntity.addEventListener('targetFound', () => {
-                    console.log("🎯 Маркер знайдено!");
-                    loader.style.display = 'none';
-                    if (arVideoEl.getAttribute('visible')) {
-                        const videoElement = arVideoEl.components.material.material.map.image;
-                        if (videoElement && videoElement.paused) {
-                            videoElement.play().catch(err => {
-                                console.error('Помилка відтворення відео:', err);
-                            });
-                        }
-                    }
-                });
+            // Обробник для відео
+            playVideoBtn.addEventListener('click', () => {
+                if (arVideoEl) {
+                    arVideoEl.setAttribute('visible', true);
+                    const videoElement = arVideoEl.components.material.material.map.image;
+                    if (videoElement && typeof videoElement.play === 'function') {
+                        videoElement.play().catch(err => {
+                            console.error('Помилка відтворення відео:', err);
+                            alert('Не вдалося відтворити відео. Перевірте формат або підключення. / Failed to play video. Check format or connection.');
+                        });
+                    }
+                } else {
+                    console.error('Відеоелемент не знайдено!');
+                    alert('Відео недоступне. Перевірте ресурси. / Video unavailable. Check resources.');
+                }
+            });
 
-                targetEntity.addEventListener('targetLost', () => {
-                    console.log("ℹ️ Маркер втрачено.");
-                    loader.style.display = 'flex';
-                    if (arVideoEl) {
-                        const videoElement = arVideoEl.components.material.material.map.image;
-                        if (videoElement) {
-                            videoElement.pause();
-                            videoElement.currentTime = 0;
-                        }
-                        arVideoEl.setAttribute('visible', false);
-                    }
-                });
-            } else {
-                console.error('Елемент mindar-image-target не знайдено!');
-                alert('Помилка ініціалізації AR. Елемент mindar-image-target відсутній. / AR initialization error: mindar-image-target element not found.');
-            }
+            // Логіка відстеження маркера
+            if (targetEntity) {
+                targetEntity.addEventListener('targetFound', () => {
+                    console.log("🎯 Маркер знайдено!");
+                    loader.style.display = 'none';
+                    
+                    // Якщо відео було видимим — відновлюємо відтворення
+                    if (arVideoEl.getAttribute('visible')) {
+                        const videoElement = arVideoEl.components.material.material.map.image;
+                        if (videoElement && videoElement.paused) {
+                            videoElement.play().catch(err => {
+                                console.error('Помилка відтворення відео:', err);
+                            });
+                        }
+                    }
+                });
 
-            // Запуск вікторини по кліку
-            quizBtn.addEventListener('click', () => {
-                if (!isQuizActive) {
-                    startQuiz();
-                }
-            });
-        });
-    </script>
+                targetEntity.addEventListener('targetLost', () => {
+                    console.log("ℹ️ Маркер втрачено.");
+                    loader.style.display = 'flex';
+                    if (arVideoEl) {
+                        const videoElement = arVideoEl.components.material.material.map.image;
+                        if (videoElement) {
+                            videoElement.pause();
+                            videoElement.currentTime = 0;
+                        }
+                        arVideoEl.setAttribute('visible', false);
+                    }
+                });
+            } else {
+                console.error('Елемент mindar-image-target не знайдено!');
+                alert('Помилка ініціалізації AR. Елемент mindar-image-target відсутній. / AR initialization error: mindar-image-target element not found.');
+            }
+
+            // Запуск вікторини по кліку
+            quizBtn.addEventListener('click', () => {
+                if (!isQuizActive) {
+                    startQuiz();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
