@@ -76,7 +76,7 @@
     </div>
 
     <a-scene
-        mindar-image="imageTargetSrc: ./targets/mycard.mind;"
+        mindar-image="imageTargetSrc: https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind; autoStart: true; maxTrack: 1;"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
         loading-screen="enabled: false"
@@ -84,14 +84,14 @@
         renderer="colorManagement: true; physicallyCorrectLights: true;"
     >
         <a-assets timeout="30000">
-            <img id="photo-texture" src="./assets/images/photo.jpg">
-            <video id="lesa-video" src="./assets/video/lesa.mp4" preload="auto" loop="false"></video>
-            <img id="youtube-icon" src="./assets/icons/youtube.png">
-            <img id="telegram-icon" src="./assets/icons/telegram.png">
-            <img id="googlesites-icon" src="./assets/icons/googlesites.png">
-            <img id="instagram-icon" src="./assets/icons/instagram.png">
-            <img id="play-icon" src="./assets/icons/play.png">
-            <img id="goy-icon" src="./assets/icons/goy.png">
+            <img id="photo-texture" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg">
+            <video id="lesa-video" src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" preload="auto" loop="false"></video>
+            <img id="youtube-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png">
+            <img id="telegram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png">
+            <img id="googlesites-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png">
+            <img id="instagram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png">
+            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png">
+            <img id="goy-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png">
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -134,6 +134,21 @@
                     question: "Як називається головна річка України?",
                     options: ["Дністер", "Дніпро", "Десна", "Дунай"],
                     answer: "Дніпро"
+                },
+                {
+                    question: "Найвища гора України — це?",
+                    options: ["Петрос", "Говерла", "Піп Іван"],
+                    answer: "Говерла"
+                },
+                {
+                    question: "Скільки адміністративних областей має Україна?",
+                    options: ["22", "24", "25"],
+                    answer: "24"
+                },
+                {
+                    question: "Скільки морів омиває Україну?",
+                    options: ["Одне", "Два", "Три"],
+                    answer: "Два"
                 }
             ];
 
@@ -197,7 +212,7 @@
                             setTimeout(() => {
                                 quizContainer.style.display = 'none';
                                 isQuizActive = false;
-                                currentQuestionIndex = 0; // Скидаємо для наступного запуску
+                                currentQuestionIndex = 0;
                             }, 2000);
                         }
                     }, 1500);
