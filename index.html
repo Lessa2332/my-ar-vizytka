@@ -73,13 +73,24 @@
             'youtube-button': 'https://www.youtube.com/@23SmartLessa32'
         };
 
+        // Дія для кліку на іконки соцмереж
         Object.keys(socialButtons).forEach(id => {
             const button = document.querySelector(`#${id}`);
-            button.addEventListener('click', () => {
-                window.open(socialButtons[id], '_blank');
-            });
+            if (button) {
+                button.addEventListener('click', () => {
+                    window.open(socialButtons[id], '_blank');
+                });
+            }
         });
 
+        // Дія для кліку на ігрову іконку
+        if (gameButton) {
+            gameButton.addEventListener('click', () => {
+                startQuiz();
+            });
+        }
+
+        // Виявлення цілі
         scene.addEventListener('targetFound', event => {
             slideVideo.setAttribute('visible', true);
             slideVideo.setAttribute('animation', 'property: position; to: -0.75 0 0; dur: 1000; easing: easeInOutQuad');
@@ -97,6 +108,7 @@
             });
         });
 
+        // Втрата цілі
         scene.addEventListener('targetLost', event => {
             slideVideo.setAttribute('visible', false);
             slideVideo.setAttribute('position', '-1.5 0 0');
@@ -110,25 +122,25 @@
 
             Object.keys(socialButtons).forEach(id => {
                 const button = document.querySelector(`#${id}`);
-                button.setAttribute('visible', false);
+                button.setAttribute('visible', false');
             });
 
             hideQuiz();
         });
 
-        videoPlayIcon.addEventListener('click', () => {
-            videoElement.play();
-            videoPlayIcon.setAttribute('visible', false);
-        });
+        // Запуск та зупинка відео
+        if (videoPlayIcon) {
+            videoPlayIcon.addEventListener('click', () => {
+                videoElement.play();
+                videoPlayIcon.setAttribute('visible', false);
+            });
+        }
 
-        videoElement.addEventListener('ended', () => {
-            videoPlayIcon.setAttribute('visible', true);
-        });
-
-        // Click on game button to start quiz
-        gameButton.addEventListener('click', () => {
-            startQuiz();
-        });
+        if (videoElement) {
+            videoElement.addEventListener('ended', () => {
+                videoPlayIcon.setAttribute('visible', true);
+            });
+        }
 
         // Quiz logic
         const questions = [
@@ -217,24 +229,26 @@
             quizEntity.setAttribute('visible', false);
         }
 
-        quizPlane.addEventListener('click', (evt) => {
-            const uv = evt.detail.intersection.uv;
-            const clickX = uv.x * 400;
-            const clickY = (1 - uv.y) * 300;
-            if (currentQuestion < questions.length) {
-                if (clickX > 20 && clickX < 380 && clickY > 50 && clickY < 270) {
-                    const index = Math.floor((clickY - 50) / 60);
-                    if (index >= 0 && index < questions[currentQuestion].options.length) {
-                        const selected = questions[currentQuestion].options[index];
-                        checkAnswer(selected);
+        if (quizPlane) {
+            quizPlane.addEventListener('click', (evt) => {
+                const uv = evt.detail.intersection.uv;
+                const clickX = uv.x * 400;
+                const clickY = (1 - uv.y) * 300;
+                if (currentQuestion < questions.length) {
+                    if (clickX > 20 && clickX < 380 && clickY > 50 && clickY < 270) {
+                        const index = Math.floor((clickY - 50) / 60);
+                        if (index >= 0 && index < questions[currentQuestion].options.length) {
+                            const selected = questions[currentQuestion].options[index];
+                            checkAnswer(selected);
+                        }
+                    }
+                } else if (isQuizEnded) {
+                    if (clickX > 100 && clickX < 300 && clickY > 200 && clickY < 240) {
+                        hideQuiz();
                     }
                 }
-            } else if (isQuizEnded) {
-                if (clickX > 100 && clickX < 300 && clickY > 200 && clickY < 240) {
-                    hideQuiz();
-                }
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
