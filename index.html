@@ -15,47 +15,6 @@
             width: 100vw;
             height: 100vh;
         }
-        #quiz-container {
-            background: white;
-            padding: 0.1em;
-            border-radius: 0.05em;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: auto;
-            font-size: 0.05em;
-            width: 0.8em;
-            text-align: center;
-        }
-        #quiz-question {
-            font-size: 0.05em;
-            margin-bottom: 0.05em;
-        }
-        #quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.05em;
-        }
-        .quiz-option {
-            padding: 0.05em;
-            background: lightblue;
-            cursor: pointer;
-            border-radius: 0.025em;
-        }
-        #quiz-feedback {
-            margin-top: 0.05em;
-            font-weight: bold;
-        }
-        #finish-button {
-            margin-top: 0.1em;
-            padding: 0.05em 0.1em;
-            background: green;
-            color: white;
-            border: none;
-            border-radius: 0.025em;
-            cursor: pointer;
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -80,8 +39,11 @@
             <!-- Video entity, initially hidden to the left -->
             <a-video src="#main-video" position="-1.5 0 0" height="0.8" width="1.42" rotation="0 0 0" visible="false" id="slide-video"></a-video>
 
+            <!-- Play icon for video -->
+            <a-plane src="#icon-play" position="-1.5 0 0.01" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="video-play-icon"></a-plane>
+
             <!-- Game button, initially hidden to the right -->
-            <a-plane src="#icon-play" position="1.5 0 0" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="game-button"></a-plane>
+            <a-plane src="#icon-goy" position="1.5 0 0" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="game-button"></a-plane>
 
             <!-- Social media buttons, initially hidden -->
             <a-plane src="#icon-googlesites" position="-0.4 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="googlesites-button" visible="false"></a-plane>
@@ -90,61 +52,34 @@
             <a-plane src="#icon-telegram" position="0.2 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="telegram-button" visible="false"></a-plane>
             <a-plane src="#icon-youtube" position="0.4 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="youtube-button" visible="false"></a-plane>
 
-            <!-- Quiz container as an HTML entity in AR -->
+            <!-- Quiz entity with canvas plane -->
             <a-entity id="quiz-entity" position="0 0.5 0" scale="1 1 1" visible="false">
-                <a-entity geometry="primitive: plane; width: 0.8; height: 0.6" material="color: white; opacity: 0.9" position="0 0 0"></a-entity>
-                <a-entity id="quiz-container" position="0 0 0.01" html="#quiz-template"></a-entity>
+                <a-plane id="quiz-plane" position="0 0 0" width="0.8" height="0.6" material="src: #quiz-canvas; transparent: true" rotation="0 0 0" class="clickable"></a-plane>
             </a-entity>
         </a-entity>
-
-        <!-- Quiz HTML template -->
-        <template id="quiz-template">
-            <div id="quiz-container">
-                <div id="quiz-question"></div>
-                <div id="quiz-options"></div>
-                <div id="quiz-feedback"></div>
-                <button id="finish-button" onclick="hideQuiz()">Завершити</button>
-            </div>
-        </template>
     </a-scene>
 
-    <script>
-        // Register A-Frame component for HTML rendering
-        AFRAME.registerComponent('html', {
-            schema: {
-                default: ''
-            },
-            init: function () {
-                this.update();
-            },
-            update: function () {
-                const templateId = this.data;
-                const template = document.querySelector(templateId);
-                if (template) {
-                    this.el.innerHTML = template.innerHTML;
-                }
-            }
-        });
+    <canvas id="quiz-canvas" width="400" height="300" style="display: none;"></canvas>
 
+    <script>
         const scene = document.querySelector('a-scene');
         const mainPlane = document.querySelector('#main-plane');
         const slideVideo = document.querySelector('#slide-video');
+        const videoPlayIcon = document.querySelector('#video-play-icon');
         const gameButton = document.querySelector('#game-button');
         const videoElement = document.querySelector('#main-video');
         const quizEntity = document.querySelector('#quiz-entity');
-        const quizContainer = document.querySelector('#quiz-container');
-        const quizQuestion = document.querySelector('#quiz-question');
-        const quizOptions = document.querySelector('#quiz-options');
-        const quizFeedback = document.querySelector('#quiz-feedback');
-        const finishButton = document.querySelector('#finish-button');
+        const quizPlane = document.querySelector('#quiz-plane');
+        const quizCanvas = document.getElementById('quiz-canvas');
+        const ctx = quizCanvas.getContext('2d');
 
         // Social media buttons
         const socialButtons = {
-            'googlesites-button': 'https://sites.google.com/view/your-site',
+            'googlesites-button': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
             'goy-button': 'https://example.com/goy',
-            'instagram-button': 'https://instagram.com/your-profile',
-            'telegram-button': 'https://t.me/your-channel',
-            'youtube-button': 'https://youtube.com/your-channel'
+            'instagram-button': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85',
+            'telegram-button': 'https://t.me/+Ck0ua_cmlI84Yjcy',
+            'youtube-button': 'https://www.youtube.com/@23SmartLessa32'
         };
 
         // Handle clicks on social buttons
@@ -159,7 +94,9 @@
         scene.addEventListener('targetFound', event => {
             slideVideo.setAttribute('visible', true);
             slideVideo.setAttribute('animation', 'property: position; to: -0.75 0 0; dur: 1000; easing: easeInOutQuad');
-            videoElement.play();
+
+            videoPlayIcon.setAttribute('visible', true);
+            videoPlayIcon.setAttribute('animation', 'property: position; to: -0.75 0 0.01; dur: 1000; easing: easeInOutQuad');
 
             gameButton.setAttribute('visible', true);
             gameButton.setAttribute('animation', 'property: position; to: 0.75 0 0; dur: 1000; easing: easeInOutQuad');
@@ -176,6 +113,9 @@
             slideVideo.setAttribute('position', '-1.5 0 0');
             videoElement.pause();
 
+            videoPlayIcon.setAttribute('visible', false);
+            videoPlayIcon.setAttribute('position', '-1.5 0 0.01');
+
             gameButton.setAttribute('visible', false);
             gameButton.setAttribute('position', '1.5 0 0');
 
@@ -188,9 +128,15 @@
             hideQuiz();
         });
 
-        // Click on main plane - no action or perhaps toggle something
-        mainPlane.addEventListener('click', () => {
-            // Optional: Toggle video or something
+        // Click on video play icon
+        videoPlayIcon.addEventListener('click', () => {
+            videoElement.play();
+            videoPlayIcon.setAttribute('visible', false);
+        });
+
+        // Show play icon when video ends
+        videoElement.addEventListener('ended', () => {
+            videoPlayIcon.setAttribute('visible', true);
         });
 
         // Click on game button to start quiz
@@ -206,56 +152,70 @@
                 answer: "Київ"
             },
             {
-                question: "Які кольори на прапорі України?",
-                options: ["Синій і жовтий", "Червоний і білий", "Зелений і жовтий", "Синій і білий"],
-                answer: "Синій і жовтий"
-            },
-            {
-                question: "Яка найбільша річка в Україні?",
-                options: ["Дніпро", "Дунай", "Дністер", "Буг"],
+                question: "Яка найдовша річка в Україні?",
+                options: ["Дніпро", "Дністер", "Південний Буг", "Дунай"],
                 answer: "Дніпро"
-            },
-            {
-                question: "Хто автор 'Кобзаря'?",
-                options: ["Тарас Шевченко", "Іван Франко", "Леся Українка", "Михайло Коцюбинський"],
-                answer: "Тарас Шевченко"
             },
             {
                 question: "Яке море омиває Україну на півдні?",
                 options: ["Чорне море", "Балтійське море", "Середземне море", "Каспійське море"],
                 answer: "Чорне море"
+            },
+            {
+                question: "Яка найвища гора в Україні?",
+                options: ["Говерла", "Роман-Кош", "Піп Іван", "Петрос"],
+                answer: "Говерла"
+            },
+            {
+                question: "З якою країною Україна межує на півночі?",
+                options: ["Білорусь", "Росія", "Польща", "Словаччина"],
+                answer: "Білорусь"
             }
         ];
 
         let currentQuestion = 0;
         let score = 0;
+        let feedback = '';
+        let feedbackColor = '';
+        let isQuizEnded = false;
 
         function startQuiz() {
             currentQuestion = 0;
             score = 0;
+            feedback = '';
+            isQuizEnded = false;
             quizEntity.setAttribute('visible', true);
-            quizContainer.style.display = 'flex';
-            finishButton.style.display = 'none';
-            loadQuestion();
+            drawQuiz();
         }
 
-        function loadQuestion() {
+        function drawQuiz() {
+            ctx.clearRect(0, 0, 400, 300);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 400, 300);
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'left';
+
             if (currentQuestion < questions.length) {
-                quizQuestion.textContent = questions[currentQuestion].question;
-                quizOptions.innerHTML = '';
-                questions[currentQuestion].options.forEach(option => {
-                    const btn = document.createElement('div');
-                    btn.classList.add('quiz-option');
-                    btn.textContent = option;
-                    btn.onclick = () => checkAnswer(option);
-                    quizOptions.appendChild(btn);
+                const q = questions[currentQuestion];
+                ctx.fillText(q.question, 20, 30);
+                q.options.forEach((opt, i) => {
+                    ctx.fillStyle = 'lightblue';
+                    ctx.fillRect(20, 50 + i * 60, 360, 40);
+                    ctx.fillStyle = 'black';
+                    ctx.fillText(opt, 30, 75 + i * 60);
                 });
-                quizFeedback.textContent = '';
+                if (feedback) {
+                    ctx.fillStyle = feedbackColor;
+                    ctx.fillText(feedback, 20, 280);
+                }
             } else {
-                quizQuestion.textContent = `Гра завершена! Твій рахунок: ${score}/${questions.length}`;
-                quizOptions.innerHTML = '';
-                quizFeedback.textContent = '';
-                finishButton.style.display = 'block';
+                isQuizEnded = true;
+                ctx.fillText(`Гра завершена! Твій рахунок: ${score}/${questions.length}`, 20, 30);
+                ctx.fillStyle = 'green';
+                ctx.fillRect(100, 200, 200, 40);
+                ctx.fillStyle = 'white';
+                ctx.fillText('Завершити', 150, 225);
             }
         }
 
@@ -263,22 +223,43 @@
             const correct = questions[currentQuestion].answer;
             if (selected === correct) {
                 score++;
-                quizFeedback.textContent = 'Правильно!';
-                quizFeedback.style.color = 'green';
+                feedback = 'Правильно!';
+                feedbackColor = 'green';
             } else {
-                quizFeedback.textContent = `Неправильно! Правильна відповідь: ${correct}`;
-                quizFeedback.style.color = 'red';
+                feedback = `Неправильно! Правильна відповідь: ${correct}`;
+                feedbackColor = 'red';
             }
+            drawQuiz();
             setTimeout(() => {
+                feedback = '';
                 currentQuestion++;
-                loadQuestion();
+                drawQuiz();
             }, 2000);
         }
 
         function hideQuiz() {
             quizEntity.setAttribute('visible', false);
-            quizContainer.style.display = 'none';
         }
+
+        // Handle clicks on quiz plane
+        quizPlane.addEventListener('click', (evt) => {
+            const uv = evt.detail.intersection.uv;
+            const clickX = uv.x * 400;
+            const clickY = (1 - uv.y) * 300; // 0 at bottom, 300 at top? No, uv.y 1 top, 0 bottom, so 1-uv.y *300 is 0 top, 300 bottom.
+            if (currentQuestion < questions.length) {
+                if (clickX > 20 && clickX < 380 && clickY > 50 && clickY < 270) {
+                    const index = Math.floor((clickY - 50) / 60);
+                    if (index >= 0 && index < 4) {
+                        const selected = questions[currentQuestion].options[index];
+                        checkAnswer(selected);
+                    }
+                }
+            } else if (isQuizEnded) {
+                if (clickX > 100 && clickX < 300 && clickY > 200 && clickY < 240) {
+                    hideQuiz();
+                }
+            }
+        });
     </script>
 </body>
 </html>
