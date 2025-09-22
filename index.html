@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple AR Card</title>
+    <title>AR Business Card</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <style>
@@ -11,19 +11,120 @@
             margin: 0;
             overflow: hidden;
         }
+        #ar-scene {
+            width: 100vw;
+            height: 100vh;
+        }
     </style>
 </head>
 <body>
-    <a-scene mindar-image="imageTargetSrc: ./targets/mycard.mind;" embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: ./assets/targets/mycard.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;" embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" id="ar-scene">
         <a-assets>
-            <img id="main-photo" src="./images/photo.jpg">
+            <img id="main-photo" src="./assets/images/photo.jpg">
+            <video id="main-video" src="./assets/video/lesa.mp4" loop="false" preload="auto"></video>
+            <img id="icon-googlesites" src="./assets/icons/googlesites.png">
+            <img id="icon-goy" src="./assets/icons/goy.png">
+            <img id="icon-instagram" src="./assets/icons/instagram.png">
+            <img id="icon-play" src="./assets/icons/play.png">
+            <img id="icon-telegram" src="./assets/icons/telegram.png">
+            <img id="icon-youtube" src="./assets/icons/youtube.png">
         </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000; objects: .clickable"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
-            <a-plane src="#main-photo" position="0 0 0" height="1" width="1" rotation="0 0 0"></a-plane>
+            <a-plane src="#main-photo" position="0 0 0" height="1" width="1" rotation="0 0 0" class="clickable"></a-plane>
+
+            <a-video src="#main-video" position="-1.5 0 0" height="0.8" width="1.42" rotation="0 0 0" visible="false" id="slide-video"></a-video>
+
+            <a-plane src="#icon-play" position="-1.5 0 0.01" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="video-play-icon"></a-plane>
+
+            <a-plane src="#icon-goy" position="1.5 0 0" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="game-button"></a-plane>
+
+            <a-plane src="#icon-googlesites" position="-0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="googlesites-button" visible="false"></a-plane>
+            <a-plane src="#icon-goy" position="-0.2 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="goy-button" visible="false"></a-plane>
+            <a-plane src="#icon-instagram" position="0 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="instagram-button" visible="false"></a-plane>
+            <a-plane src="#icon-telegram" position="0.2 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="telegram-button" visible="false"></a-plane>
+            <a-plane src="#icon-youtube" position="0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="youtube-button" visible="false"></a-plane>
         </a-entity>
     </a-scene>
+
+    <script>
+        const scene = document.querySelector('a-scene');
+        const slideVideo = document.querySelector('#slide-video');
+        const videoPlayIcon = document.querySelector('#video-play-icon');
+        const gameButton = document.querySelector('#game-button');
+        const videoElement = document.querySelector('#main-video');
+
+        // Посилання на соціальні мережі
+        const socialButtons = {
+            'googlesites-button': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
+            'instagram-button': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85',
+            'telegram-button': 'https://t.me/+Ck0ua_cmlI84Yjcy',
+            'youtube-button': 'https://www.youtube.com/@23SmartLessa32'
+        };
+
+        // Дія для кліку на іконки соцмереж
+        Object.keys(socialButtons).forEach(id => {
+            const button = document.querySelector(`#${id}`);
+            button.addEventListener('click', () => {
+                window.open(socialButtons[id], '_blank');
+            });
+        });
+
+        // Дія для кліку на ігрову іконку
+        gameButton.addEventListener('click', () => {
+             window.open('https://example.com/goy', '_blank'); // Замініть на реальне посилання на гру
+        });
+
+        // Виявлення цілі
+        scene.addEventListener('targetFound', event => {
+            // Анімація для відео та іконки "Play"
+            slideVideo.setAttribute('visible', true);
+            slideVideo.setAttribute('animation', 'property: position; to: -0.75 0 0; dur: 1000; easing: easeInOutQuad');
+
+            videoPlayIcon.setAttribute('visible', true);
+            videoPlayIcon.setAttribute('animation', 'property: position; to: -0.75 0 0.01; dur: 1000; easing: easeInOutQuad');
+
+            // Анімація для кнопки "Game"
+            gameButton.setAttribute('visible', true);
+            gameButton.setAttribute('animation', 'property: position; to: 0.75 0 0; dur: 1000; easing: easeInOutQuad');
+
+            // Анімація для іконок соцмереж
+            Object.keys(socialButtons).forEach(id => {
+                const button = document.querySelector(`#${id}`);
+                button.setAttribute('visible', true);
+                button.setAttribute('animation', 'property: scale; from: 0 0 0; to: 1 1 1; dur: 500; easing: easeInOutQuad');
+            });
+        });
+
+        // Втрата цілі
+        scene.addEventListener('targetLost', event => {
+            slideVideo.setAttribute('visible', false);
+            slideVideo.setAttribute('position', '-1.5 0 0');
+            videoElement.pause();
+
+            videoPlayIcon.setAttribute('visible', false);
+            videoPlayIcon.setAttribute('position', '-1.5 0 0.01');
+
+            gameButton.setAttribute('visible', false);
+            gameButton.setAttribute('position', '1.5 0 0');
+
+            Object.keys(socialButtons).forEach(id => {
+                const button = document.querySelector(`#${id}`);
+                button.setAttribute('visible', false);
+            });
+        });
+
+        // Запуск та зупинка відео
+        videoPlayIcon.addEventListener('click', () => {
+            videoElement.play();
+            videoPlayIcon.setAttribute('visible', false);
+        });
+
+        videoElement.addEventListener('ended', () => {
+            videoPlayIcon.setAttribute('visible', true);
+        });
+    </script>
 </body>
 </html>
