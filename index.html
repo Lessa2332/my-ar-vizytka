@@ -45,10 +45,6 @@
             <a-plane src="#icon-instagram" position="0 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="instagram-button" visible="false"></a-plane>
             <a-plane src="#icon-telegram" position="0.2 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="telegram-button" visible="false"></a-plane>
             <a-plane src="#icon-youtube" position="0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="youtube-button" visible="false"></a-plane>
-
-            <a-entity id="quiz-entity" position="0 0.5 0" scale="1 1 1" visible="false">
-                <a-plane id="quiz-plane" position="0 0 0" width="0.8" height="0.6" material="src: #quiz-canvas; transparent: true" rotation="0 0 0" class="clickable"></a-plane>
-            </a-entity>
         </a-entity>
     </a-scene>
 
@@ -112,7 +108,7 @@
         scene.addEventListener('targetLost', event => {
             slideVideo.setAttribute('visible', false);
             slideVideo.setAttribute('position', '-1.5 0 0');
-            videoElement.pause();
+            if (videoElement) videoElement.pause();
 
             videoPlayIcon.setAttribute('visible', false);
             videoPlayIcon.setAttribute('position', '-1.5 0 0.01');
@@ -122,7 +118,7 @@
 
             Object.keys(socialButtons).forEach(id => {
                 const button = document.querySelector(`#${id}`);
-                button.setAttribute('visible', false');
+                button.setAttribute('visible', false);
             });
 
             hideQuiz();
@@ -131,14 +127,18 @@
         // Запуск та зупинка відео
         if (videoPlayIcon) {
             videoPlayIcon.addEventListener('click', () => {
-                videoElement.play();
-                videoPlayIcon.setAttribute('visible', false);
+                if (videoElement) {
+                    videoElement.play();
+                    videoPlayIcon.setAttribute('visible', false);
+                }
             });
         }
 
         if (videoElement) {
             videoElement.addEventListener('ended', () => {
-                videoPlayIcon.setAttribute('visible', true);
+                if (videoPlayIcon) {
+                    videoPlayIcon.setAttribute('visible', true);
+                }
             });
         }
 
@@ -231,6 +231,8 @@
 
         if (quizPlane) {
             quizPlane.addEventListener('click', (evt) => {
+                if (!evt.detail.intersection) return;
+
                 const uv = evt.detail.intersection.uv;
                 const clickX = uv.x * 400;
                 const clickY = (1 - uv.y) * 300;
