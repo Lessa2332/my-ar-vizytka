@@ -23,23 +23,6 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         .pulse { animation: pulse 1.5s infinite; }
 
-        /* Стилі для кнопок */
-        .controls {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 10000; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
-            max-width: 90%;
-        }
-        .control-btn {
-            background-color: rgba(255, 255, 255, 0.8); border: 2px solid #ddd;
-            border-radius: 10px; padding: 8px 15px; cursor: pointer;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-            font-size: 1em; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-decoration: none; color: #333;
-        }
-        .control-btn img { height: 24px; vertical-align: middle; margin-right: 8px; }
-        .control-btn:hover { background-color: rgba(255, 255, 255, 1); }
-        .control-btn.disabled { opacity: 0.5; pointer-events: none; }
-
         /* Стилі для вікторини */
         .quiz-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -96,42 +79,31 @@
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
-            <a-image src="#photo-texture" position="0 0 -0.1" height="1.0" width="0.75"></a-image>
+            <a-image src="#photo-texture" position="0 0 -0.1" height="1.0" width="0.75" rotation="0 0 0"></a-image>
 
-            <a-plane id="youtube-link" class="link-btn" width="0.2" height="0.2" position="0.5 -0.5 0" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;"></a-plane>
-            <a-plane id="telegram-link" class="link-btn" width="0.2" height="0.2" position="0.2 -0.5 0" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;"></a-plane>
-            <a-plane id="google-link" class="link-btn" width="0.2" height="0.2" position="-0.1 -0.5 0" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;"></a-plane>
-            <a-plane id="instagram-link" class="link-btn" width="0.2" height="0.2" position="-0.4 -0.5 0" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;"></a-plane>
-            <a-plane id="play-video-btn" class="video-btn" width="0.2" height="0.2" position="-0.7 -0.5 0" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;"></a-plane>
-            <a-plane id="quiz-btn" class="quiz-btn" width="0.2" height="0.2" position="-1.0 -0.5 0" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="youtube-btn" class="clickable" width="0.2" height="0.2" position="0.5 -0.5 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="telegram-btn" class="clickable" width="0.2" height="0.2" position="0.2 -0.5 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="google-btn" class="clickable" width="0.2" height="0.2" position="-0.1 -0.5 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="instagram-btn" class="clickable" width="0.2" height="0.2" position="-0.4 -0.5 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="play-video-btn" class="clickable" width="0.2" height="0.2" position="-0.7 -0.5 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="quiz-btn" class="clickable" width="0.2" height="0.2" position="-1.0 -0.5 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;"></a-plane>
             
-            <a-video id="ar-video" src="#lesa-video" position="0.8 0 0" width="1.6" height="0.9" visible="false"></a-video>
+            <a-video id="ar-video" src="#lesa-video" position="0.8 0 0.05" width="1.6" height="0.9" visible="false"></a-video>
         </a-entity>
     </a-scene>
-
-    <div class="controls">
-        <button id="youtube-btn" class="control-btn"><img src="./assets/icons/youtube.png" alt="YouTube">YouTube</button>
-        <button id="telegram-btn" class="control-btn"><img src="./assets/icons/telegram.png" alt="Telegram">Telegram</button>
-        <button id="google-btn" class="control-btn"><img src="./assets/icons/googlesites.png" alt="Google Sites">Google Site</button>
-        <button id="instagram-btn" class="control-btn"><img src="./assets/icons/instagram.png" alt="Instagram">Instagram</button>
-        <button id="play-video-html-btn" class="control-btn"><img src="./assets/icons/play.png" alt="Play">Play Video</button>
-        <button id="quiz-start-btn" class="control-btn"><img src="./assets/icons/goy.png" alt="Quiz">Quiz</button>
-    </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const loader = document.getElementById('loader');
             const targetEntity = document.querySelector('[mindar-image-target]');
 
-            // Посилання на 3D-елементи сцени
+            // Посилання на A-Frame елементи
             const arVideoEl = document.getElementById('ar-video');
-            const videoAsset = document.getElementById('lesa-video');
             const playVideoBtn = document.getElementById('play-video-btn');
             const quizBtn = document.getElementById('quiz-btn');
 
-            // Посилання на HTML-елементи
+            // Посилання на HTML-елементи вікторини
             const quizContainer = document.getElementById('quiz-container');
-            const quizStartBtn = document.getElementById('quiz-start-btn');
             const quizQuestionEl = document.getElementById('quiz-question');
             const quizOptionsEl = document.getElementById('quiz-options');
             const quizResultEl = document.getElementById('quiz-result');
@@ -175,7 +147,6 @@
                 const currentQuestion = quizData[currentQuestionIndex];
                 const isCorrect = selectedOption === currentQuestion.answer;
                 
-                // Візуальна індикація
                 Array.from(quizOptionsEl.children).forEach(button => {
                     button.disabled = true;
                     if (button.textContent === currentQuestion.answer) {
@@ -210,34 +181,37 @@
                     }, 1500);
                 }
             }
-            
-            // Логіка для AR-кнопок
-            const arVideo = document.getElementById('ar-video');
-            const arVideoBtn = document.getElementById('play-video-btn');
-            arVideoBtn.addEventListener('click', () => {
-                arVideo.setAttribute('visible', 'true');
-                arVideo.play();
+
+            // Обробники кліків для A-Frame кнопок
+            const links = {
+                'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
+                'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
+                'google-btn': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
+                'instagram-btn': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85'
+            };
+
+            // Додаємо обробники для посилань
+            Object.keys(links).forEach(id => {
+                const el = document.getElementById(id);
+                el.addEventListener('click', () => {
+                    window.open(links[id], '_blank');
+                });
             });
 
-            const arQuizBtn = document.getElementById('quiz-btn');
-            arQuizBtn.addEventListener('click', () => {
-                startQuiz();
-            });
-
-            // Обробники для HTML-кнопок
-            document.getElementById('youtube-btn').addEventListener('click', () => { window.open('https://www.youtube.com/@23SmartLessa32', '_blank'); });
-            document.getElementById('telegram-btn').addEventListener('click', () => { window.open('https://t.me/+Ck0ua_cmlI84Yjcy', '_blank'); });
-            document.getElementById('google-btn').addEventListener('click', () => { window.open('https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0', '_blank'); });
-            document.getElementById('instagram-btn').addEventListener('click', () => { window.open('https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85', '_blank'); });
-            document.getElementById('play-video-html-btn').addEventListener('click', () => {
-                if (arVideo.components && arVideo.components.material) {
-                    arVideo.setAttribute('visible', 'true');
-                    arVideo.play();
+            // Обробник для відео
+            playVideoBtn.addEventListener('click', () => {
+                if (arVideoEl) {
+                    arVideoEl.setAttribute('visible', 'true');
+                    arVideoEl.play();
                 } else {
-                    alert('Відео не готове до відтворення. Спробуйте ще раз.');
+                    console.error('Відеоелемент не знайдено!');
                 }
             });
-            document.getElementById('quiz-start-btn').addEventListener('click', startQuiz);
+
+            // Обробник для вікторини
+            quizBtn.addEventListener('click', () => {
+                startQuiz();
+            });
 
             // Логіка відстеження маркера
             if (targetEntity) {
@@ -245,13 +219,16 @@
                     console.log("🎯 Маркер знайдено!");
                     loader.style.display = 'none';
                 });
+
                 targetEntity.addEventListener('targetLost', () => {
                     console.log("ℹ️ Маркер втрачено.");
                     loader.style.display = 'flex';
                     // Зупиняємо відео, якщо маркер втрачено
-                    arVideo.pause();
-                    arVideo.currentTime = 0;
-                    arVideo.setAttribute('visible', 'false');
+                    if (arVideoEl) {
+                        arVideoEl.pause();
+                        arVideoEl.currentTime = 0;
+                        arVideoEl.setAttribute('visible', 'false');
+                    }
                 });
             } else {
                 console.error('Елемент mindar-image-target не знайдено!');
