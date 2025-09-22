@@ -1,284 +1,259 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Business Card</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
+        body { margin: 0; overflow: hidden; }
+        .arjs-loader {
+            height: 100%; width: 100%; position: absolute; top: 0; left: 0;
+            background: rgba(135, 206, 235, 0.2); z-index: 9999; display: flex;
+            justify-content: center; align-items: center; color: #FF4500; font-size: 1.5em;
         }
-        #ar-scene {
-            width: 100vw;
-            height: 100vh;
-        }
-        #quiz-container {
-            background: white;
-            padding: 0.1em;
-            border-radius: 0.05em;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: auto;
-            font-size: 0.05em;
-            width: 0.8em;
-            text-align: center;
-        }
-        #quiz-question {
-            font-size: 0.05em;
-            margin-bottom: 0.05em;
-        }
-        #quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.05em;
-        }
-        .quiz-option {
-            padding: 0.05em;
-            background: lightblue;
-            cursor: pointer;
-            border-radius: 0.025em;
-        }
-        #quiz-feedback {
-            margin-top: 0.05em;
-            font-weight: bold;
-        }
-        #finish-button {
-            margin-top: 0.1em;
-            padding: 0.05em 0.1em;
-            background: green;
-            color: white;
-            border: none;
-            border-radius: 0.025em;
-            cursor: pointer;
-            display: none;
+        @font-face {
+            font-family: 'exo2bold';
+            src: url('https://lessa2332.github.io/my-ar-vizytka/assets/fonts/Exo2-Bold.ttf') format('truetype');
         }
     </style>
-</head>
-<body>
-    <a-scene mindar-image="imageTargetSrc: ./targets/mycard.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;" embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" id="ar-scene">
-        <a-assets>
-            <img id="main-photo" src="./images/photo.jpg">
-            <video id="main-video" src="./video/lesa.mp4" loop="false" preload="auto"></video>
-            <img id="icon-googlesites" src="./icons/googlesites.png">
-            <img id="icon-goy" src="./icons/goy.png">
-            <img id="icon-instagram" src="./icons/instagram.png">
-            <img id="icon-play" src="./icons/play.png">
-            <img id="icon-telegram" src="./icons/telegram.png">
-            <img id="icon-youtube" src="./icons/youtube.png">
-        </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000; objects: .clickable"></a-camera>
+    <script>
+        AFRAME.registerComponent('quiz-game', {
+            init: function () {
+                this.questions = [
+                    { q: 'Найвища гора України — це?', a: ['Петрос', 'Говерла', 'Піп Іван'], correct: 1 },
+                    { q: 'Скільки адміністративних областей має Україна?', a: ['22', '24', '25'], correct: 1 },
+                    { q: 'Яка річка України найдовша?', a: ['Дніпро', 'Дунай', 'Південний Буг'], correct: 0 },
+                    { q: 'Яка країна межує з Україною на півночі?', a: ['Польща', 'Білорусь', 'Румунія'], correct: 1 },
+                    { q: 'Скільки морів омиває Україну?', a: ['Одне', 'Два', 'Три'], correct: 1 }
+                ];
+                this.currentQ = 0;
+                this.score = 0;
+                this.timer = null;
+                // Збільшений розмір canvas для кращої якості зображення
+                this.canvas = document.createElement('canvas');
+                this.canvas.width = 1024;
+                this.canvas.height = 768;
+                this.ctx = this.canvas.getContext('2d');
+                this.texture = new THREE.CanvasTexture(this.canvas);
+                this.el.setAttribute('material', { src: this.texture, side: 'double' });
+                this.drawQuiz();
+                this.el.addEventListener('click', (evt) => {
+                    if (!evt.detail.uv) {
+                        return;
+                    }
+                    let uv = evt.detail.uv;
+                    if (uv.y > 0.35 && uv.y < 0.65) {
+                        let choice = Math.floor(uv.x * 3);
+                        this.checkAnswer(choice);
+                    }
+                });
+            },
+            drawQuiz: function () {
+                let ctx = this.ctx;
+                let w = ctx.canvas.width, h = ctx.canvas.height;
+                ctx.fillStyle = '#111';
+                ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.font = `${Math.min(w * 0.05, 50)}px Arial`;
+                let q = this.questions[this.currentQ];
+                if (!q) {
+                    ctx.fillText(`🎉 Вікторина завершена!`, w / 2, h * 0.35);
+                    ctx.fillText(`✅ Ваш результат: ${this.score} з 5`, w / 2, h * 0.45);
+                    this.texture.needsUpdate = true;
+                    return;
+                }
+                ctx.fillText(`❓ Питання ${this.currentQ + 1} з 5`, w / 2, h * 0.2);
+                ctx.font = `${Math.min(w * 0.04, 35)}px Arial`;
+                ctx.fillText(q.q, w / 2, h * 0.3);
+                ctx.fillStyle = '#555';
+                ctx.fillRect(w * 0.05, h * 0.5, w * 0.28, h * 0.1);
+                ctx.fillRect(w * 0.37, h * 0.5, w * 0.28, h * 0.1);
+                ctx.fillRect(w * 0.69, h * 0.5, w * 0.28, h * 0.1);
+                ctx.fillStyle = '#fff';
+                ctx.font = `${Math.min(w * 0.035, 30)}px Arial`;
+                ctx.fillText(q.a[0], w * 0.19, h * 0.55);
+                ctx.fillText(q.a[1], w * 0.51, h * 0.55);
+                ctx.fillText(q.a[2], w * 0.83, h * 0.55);
+                this.texture.needsUpdate = true;
+            },
+            checkAnswer: function (choice) {
+                if (choice === this.questions[this.currentQ].correct) this.score++;
+                this.currentQ++;
+                clearTimeout(this.timer);
+                this.timer = setTimeout(() => {
+                    this.drawQuiz();
+                }, 500);
+            },
+            remove: function () {
+                clearTimeout(this.timer);
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="arjs-loader" id="loader">🔍 Наведіть камеру на візитку</div>
+    <a-scene mindar-image="imageTargetSrc: https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind; autoStart: true; maxTrack: 1"
+        color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights: true"
+        vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="rayOrigin: mouse" raycaster="objects: .interactive"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
-            <!-- Main photo plane -->
-            <a-plane src="#main-photo" position="0 0 0" height="1" width="1" rotation="0 0 0" class="clickable" id="main-plane"></a-plane>
+            
+            <a-entity id="main-content" scale="0 0 0" visible="false">
+                <a-animation attribute="scale" from="0 0 0" to="1 1 1" dur="1000" easing="ease-in-out" begin="targetFound" fill="forwards"></a-animation>
+                <a-animation attribute="scale" from="1 1 1" to="0 0 0" dur="1000" easing="ease-in-out" begin="targetLost" fill="forwards"></a-animation>
 
-            <!-- Video entity, initially hidden to the left -->
-            <a-video src="#main-video" position="-1.5 0 0" height="0.8" width="1.42" rotation="0 0 0" visible="false" id="slide-video"></a-video>
+                <a-plane position="0 0 0.01" height="1" width="1" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg"></a-plane>
 
-            <!-- Game button, initially hidden to the right -->
-            <a-plane src="#icon-play" position="1.5 0 0" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="game-button"></a-plane>
+                <a-plane position="0 0 0.05" height="0.3" width="0.3"
+                    material="color: #00ffcc; opacity: 0.5"
+                    animation="property: scale; from: 1 1 1; to: 1.1 1.1 1.1; dur: 1500; direction: alternate; loop: true; easing: ease-in-out;"></a-plane>
 
-            <!-- Social media buttons, initially hidden -->
-            <a-plane src="#icon-googlesites" position="-0.4 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="googlesites-button" visible="false"></a-plane>
-            <a-plane src="#icon-goy" position="-0.2 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="goy-button" visible="false"></a-plane>
-            <a-plane src="#icon-instagram" position="0 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="instagram-button" visible="false"></a-plane>
-            <a-plane src="#icon-telegram" position="0.2 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="telegram-button" visible="false"></a-plane>
-            <a-plane src="#icon-youtube" position="0.4 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="youtube-button" visible="false"></a-plane>
+                <a-entity id="interactive-elements" position="0 0 0.15">
+                    
+                    <a-entity class="interactive" position="0.5 0.5 0.2" rotation="0 0 0"
+                        onclick="document.getElementById('video-modal').emit('show-modal');"
+                        event-set__mouseenter="scale: 1.15 1.15 1.15;"
+                        event-set__mouseleave="scale: 1 1 1;">
+                        <a-plane height="0.4" width="0.4" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png; transparent: true; alphaTest: 0.1"></a-plane>
+                        <a-text value="Відео" align="center" width="1" position="0 -0.3 0" color="#fff" font="exo2bold"></a-text>
+                    </a-entity>
+                    
+                    <a-entity class="interactive" position="-0.5 0.5 0.2" rotation="0 0 0"
+                        onclick="document.getElementById('game-modal').emit('show-modal');"
+                        event-set__mouseenter="scale: 1.15 1.15 1.15;"
+                        event-set__mouseleave="scale: 1 1 1;">
+                        <a-plane height="0.4" width="0.4" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png; transparent: true; alphaTest: 0.1"></a-plane>
+                        <a-text value="Гра" align="center" width="1" position="0 -0.3 0" color="#fff" font="exo2bold"></a-text>
+                    </a-entity>
+                    
+                    <a-entity class="interactive" position="0.5 -0.5 0.2" rotation="0 0 0"
+                        onclick="document.getElementById('social-modal').emit('show-modal');"
+                        event-set__mouseenter="scale: 1.15 1.15 1.15;"
+                        event-set__mouseleave="scale: 1 1 1;">
+                        <a-plane height="0.4" width="0.4" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png; transparent: true; alphaTest: 0.1"></a-plane>
+                        <a-text value="Соцмережі" align="center" width="1" position="0 -0.3 0" color="#fff" font="exo2bold"></a-text>
+                    </a-entity>
+                    
+                    <a-entity class="interactive" position="-0.5 -0.5 0.2" rotation="0 0 0"
+                        onclick="window.open('https://t.me/+Ck0ua_cmlI84Yjcy', '_blank');"
+                        event-set__mouseenter="scale: 1.15 1.15 1.15;"
+                        event-set__mouseleave="scale: 1 1 1;">
+                        <a-plane height="0.4" width="0.4" material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png; transparent: true; alphaTest: 0.1"></a-plane>
+                        <a-text value="Приєднатись до AR_HUB" align="center" width="1.8" position="0 -0.3 0" color="#fff" font="exo2bold"></a-text>
+                    </a-entity>
+                </a-entity>
+            </a-entity>
 
-            <!-- Quiz container as an HTML entity in AR -->
-            <a-entity id="quiz-entity" position="0 0.5 0" scale="1 1 1" visible="false">
-                <a-entity geometry="primitive: plane; width: 0.8; height: 0.6" material="color: white; opacity: 0.9" position="0 0 0"></a-entity>
-                <a-entity id="quiz-container" position="0 0 0.01" html="#quiz-template"></a-entity>
+            <a-entity id="video-modal" visible="false" position="0 0 0"
+                animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
+                animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
+                <a-plane position="0 0 0" height="1" width="1.6" rotation="0 0 0" color="#333" opacity="0.95">
+                    <a-video src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" autoplay="true" loop="true" position="0 0 0.001" height="0.8" width="1.4"></a-video>
+                    <a-plane class="interactive" position="-0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF4500"
+                        event-set__mouseenter="scale: 1.1 1.1 1.1"
+                        event-set__mouseleave="scale: 1 1 1"
+                        onclick="document.querySelector('a-video').components.video.video.muted = !document.querySelector('a-video').components.video.video.muted;">
+                        <a-text value="Звук" align="center" color="#fff" width="1.5" position="0 0 0.01" font="exo2bold"></a-text>
+                    </a-plane>
+                    <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF4500"
+                        event-set__mouseenter="scale: 1.1 1.1 1.1"
+                        event-set__mouseleave="scale: 1 1 1"
+                        onclick="document.getElementById('video-modal').emit('hide-modal');">
+                        <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01" font="exo2bold"></a-text>
+                    </a-plane>
+                </a-plane>
+            </a-entity>
+
+            <a-entity id="game-modal" visible="false" position="0 0 0"
+                animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
+                animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
+                <a-plane quiz-game height="1.2" width="1.6" position="0 0 0" rotation="0 0 0" material="side: double"></a-plane>
+                <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF4500"
+                    event-set__mouseenter="scale: 1.1 1.1 1.1"
+                    event-set__mouseleave="scale: 1 1 1"
+                    onclick="document.getElementById('game-modal').emit('hide-modal');">
+                    <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01" font="exo2bold"></a-text>
+                </a-plane>
+            </a-entity>
+
+            <a-entity id="social-modal" visible="false" position="0 0 0"
+                animation__show="property: position; to: 0 0 1; dur: 500; easing: easeOutQuad; startEvents: show-modal"
+                animation__hide="property: position; to: 0 0 0; dur: 500; easing: easeOutQuad; startEvents: hide-modal">
+                <a-plane position="0 0 0" height="1.2" width="1.6" color="#333" opacity="0.95">
+                    <a-text value="📱 Соцмережі:" align="left" color="#fff" width="1.5" position="-0.7 0.45 0.01" font="exo2bold"></a-text>
+                    
+                    <a-plane class="interactive" position="-0.4 0.25 0.01" height="0.2" width="1" 
+                        material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png; transparent: true; alphaTest: 0.1"
+                        event-set__mouseenter="scale: 1.05 1.05 1.05"
+                        event-set__mouseleave="scale: 1 1 1"
+                        onclick="window.open('https://www.youtube.com/@23SmartLessa32', '_blank');"></a-plane>
+                    
+                    <a-plane class="interactive" position="-0.4 -0.15 0.01" height="0.2" width="1" 
+                        material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png; transparent: true; alphaTest: 0.1"
+                        event-set__mouseenter="scale: 1.05 1.05 1.05"
+                        event-set__mouseleave="scale: 1 1 1"
+                        onclick="window.open('https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0', '_blank');"></a-plane>
+                    
+                    <a-plane class="interactive" position="-0.4 -0.35 0.01" height="0.2" width="1" 
+                        material="src: https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png; transparent: true; alphaTest: 0.1"
+                        event-set__mouseenter="scale: 1.05 1.05 1.05"
+                        event-set__mouseleave="scale: 1 1 1"
+                        onclick="window.open('https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85', '_blank');"></a-plane>
+                    
+                    <a-plane class="interactive" position="0.7 -0.55 0.001" height="0.2" width="0.3" color="#FF4500"
+                        event-set__mouseenter="scale: 1.1 1.1 1.1"
+                        event-set__mouseleave="scale: 1 1 1"
+                        onclick="document.getElementById('social-modal').emit('hide-modal');">
+                        <a-text value="Закрити" align="center" color="#fff" width="1.5" position="0 0 0.01" font="exo2bold"></a-text>
+                    </a-plane>
+                </a-plane>
             </a-entity>
         </a-entity>
-
-        <!-- Quiz HTML template -->
-        <template id="quiz-template">
-            <div id="quiz-container">
-                <div id="quiz-question"></div>
-                <div id="quiz-options"></div>
-                <div id="quiz-feedback"></div>
-                <button id="finish-button" onclick="hideQuiz()">Завершити</button>
-            </div>
-        </template>
     </a-scene>
 
     <script>
-        // Register A-Frame component for HTML rendering
-        AFRAME.registerComponent('html', {
-            schema: {
-                default: ''
-            },
-            init: function () {
-                this.update();
-            },
-            update: function () {
-                const templateId = this.data;
-                const template = document.querySelector(templateId);
-                if (template) {
-                    this.el.innerHTML = template.innerHTML;
+        const loader = document.querySelector('#loader');
+        const targetEntity = document.querySelector('[mindar-image-target]');
+        const mainContent = document.querySelector('#main-content');
+        
+        // Перевірка підтримки WebXR
+        if (!navigator.xr) {
+            loader.textContent = '❌ Ваш пристрій не підтримує AR';
+        }
+
+        // Перевірка завантаження маркера
+        fetch('https://lessa2332.github.io/my-ar-vizytka/assets/targets/mycard.mind')
+            .then(response => {
+                if (!response.ok) throw new Error('Маркер не знайдено');
+            })
+            .catch(error => {
+                loader.textContent = '❌ Не вдалося завантажити маркер';
+                console.error('Помилка завантаження .mind:', error);
+            });
+
+        targetEntity.addEventListener('targetFound', () => {
+            loader.style.display = 'none';
+            mainContent.setAttribute('visible', 'true');
+            mainContent.emit('targetFound');
+        });
+
+        targetEntity.addEventListener('targetLost', () => {
+            loader.style.display = 'flex';
+            mainContent.emit('targetLost');
+            // Приховуємо модальні вікна, якщо маркер втрачено
+            const modals = ['#video-modal', '#game-modal', '#social-modal'];
+            modals.forEach(id => {
+                const modal = document.querySelector(id);
+                if (modal.getAttribute('visible')) {
+                    modal.emit('hide-modal');
                 }
-            }
-        });
-
-        const scene = document.querySelector('a-scene');
-        const mainPlane = document.querySelector('#main-plane');
-        const slideVideo = document.querySelector('#slide-video');
-        const gameButton = document.querySelector('#game-button');
-        const videoElement = document.querySelector('#main-video');
-        const quizEntity = document.querySelector('#quiz-entity');
-        const quizContainer = document.querySelector('#quiz-container');
-        const quizQuestion = document.querySelector('#quiz-question');
-        const quizOptions = document.querySelector('#quiz-options');
-        const quizFeedback = document.querySelector('#quiz-feedback');
-        const finishButton = document.querySelector('#finish-button');
-
-        // Social media buttons
-        const socialButtons = {
-            'googlesites-button': 'https://sites.google.com/view/your-site',
-            'goy-button': 'https://example.com/goy',
-            'instagram-button': 'https://instagram.com/your-profile',
-            'telegram-button': 'https://t.me/your-channel',
-            'youtube-button': 'https://youtube.com/your-channel'
-        };
-
-        // Handle clicks on social buttons
-        Object.keys(socialButtons).forEach(id => {
-            const button = document.querySelector(`#${id}`);
-            button.addEventListener('click', () => {
-                window.open(socialButtons[id], '_blank');
             });
         });
-
-        // Detect AR target and show elements
-        scene.addEventListener('targetFound', event => {
-            slideVideo.setAttribute('visible', true);
-            slideVideo.setAttribute('animation', 'property: position; to: -0.75 0 0; dur: 1000; easing: easeInOutQuad');
-            videoElement.play();
-
-            gameButton.setAttribute('visible', true);
-            gameButton.setAttribute('animation', 'property: position; to: 0.75 0 0; dur: 1000; easing: easeInOutQuad');
-
-            // Show social buttons
-            Object.keys(socialButtons).forEach(id => {
-                const button = document.querySelector(`#${id}`);
-                button.setAttribute('visible', true);
-            });
-        });
-
-        scene.addEventListener('targetLost', event => {
-            slideVideo.setAttribute('visible', false);
-            slideVideo.setAttribute('position', '-1.5 0 0');
-            videoElement.pause();
-
-            gameButton.setAttribute('visible', false);
-            gameButton.setAttribute('position', '1.5 0 0');
-
-            // Hide social buttons
-            Object.keys(socialButtons).forEach(id => {
-                const button = document.querySelector(`#${id}`);
-                button.setAttribute('visible', false);
-            });
-
-            hideQuiz();
-        });
-
-        // Click on main plane - no action or perhaps toggle something
-        mainPlane.addEventListener('click', () => {
-            // Optional: Toggle video or something
-        });
-
-        // Click on game button to start quiz
-        gameButton.addEventListener('click', () => {
-            startQuiz();
-        });
-
-        // Quiz logic
-        const questions = [
-            {
-                question: "Яка столиця України?",
-                options: ["Київ", "Львів", "Одеса", "Харків"],
-                answer: "Київ"
-            },
-            {
-                question: "Які кольори на прапорі України?",
-                options: ["Синій і жовтий", "Червоний і білий", "Зелений і жовтий", "Синій і білий"],
-                answer: "Синій і жовтий"
-            },
-            {
-                question: "Яка найбільша річка в Україні?",
-                options: ["Дніпро", "Дунай", "Дністер", "Буг"],
-                answer: "Дніпро"
-            },
-            {
-                question: "Хто автор 'Кобзаря'?",
-                options: ["Тарас Шевченко", "Іван Франко", "Леся Українка", "Михайло Коцюбинський"],
-                answer: "Тарас Шевченко"
-            },
-            {
-                question: "Яке море омиває Україну на півдні?",
-                options: ["Чорне море", "Балтійське море", "Середземне море", "Каспійське море"],
-                answer: "Чорне море"
-            }
-        ];
-
-        let currentQuestion = 0;
-        let score = 0;
-
-        function startQuiz() {
-            currentQuestion = 0;
-            score = 0;
-            quizEntity.setAttribute('visible', true);
-            quizContainer.style.display = 'flex';
-            finishButton.style.display = 'none';
-            loadQuestion();
-        }
-
-        function loadQuestion() {
-            if (currentQuestion < questions.length) {
-                quizQuestion.textContent = questions[currentQuestion].question;
-                quizOptions.innerHTML = '';
-                questions[currentQuestion].options.forEach(option => {
-                    const btn = document.createElement('div');
-                    btn.classList.add('quiz-option');
-                    btn.textContent = option;
-                    btn.onclick = () => checkAnswer(option);
-                    quizOptions.appendChild(btn);
-                });
-                quizFeedback.textContent = '';
-            } else {
-                quizQuestion.textContent = `Гра завершена! Твій рахунок: ${score}/${questions.length}`;
-                quizOptions.innerHTML = '';
-                quizFeedback.textContent = '';
-                finishButton.style.display = 'block';
-            }
-        }
-
-        function checkAnswer(selected) {
-            const correct = questions[currentQuestion].answer;
-            if (selected === correct) {
-                score++;
-                quizFeedback.textContent = 'Правильно!';
-                quizFeedback.style.color = 'green';
-            } else {
-                quizFeedback.textContent = `Неправильно! Правильна відповідь: ${correct}`;
-                quizFeedback.style.color = 'red';
-            }
-            setTimeout(() => {
-                currentQuestion++;
-                loadQuestion();
-            }, 2000);
-        }
-
-        function hideQuiz() {
-            quizEntity.setAttribute('visible', false);
-            quizContainer.style.display = 'none';
-        }
     </script>
 </body>
 </html>
