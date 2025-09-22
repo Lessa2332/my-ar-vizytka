@@ -1,256 +1,262 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Business Card</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="AR-візитка-портфоліо">
+    <title>🎨Smart Lessa AR-візитка</title>
+
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        a-scene { width: 100% !important; height: 100% !important; position: fixed; top: 0; left: 0; }
+        .arjs-loader {
+            height: 100%; width: 100%; position: absolute; top: 0; left: 0;
+            background: rgba(135, 206, 235, 0.9); z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: #FF4500; font-size: 1.8em; text-align: center; padding: 20px; box-sizing: border-box;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
         }
-        #ar-scene {
-            width: 100vw;
-            height: 100vh;
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .pulse { animation: pulse 1.5s infinite; }
+
+        /* Стилі для кнопок */
+        .controls {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 10000; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+            max-width: 90%;
         }
+        .control-btn {
+            background-color: rgba(255, 255, 255, 0.8); border: 2px solid #ddd;
+            border-radius: 10px; padding: 8px 15px; cursor: pointer;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            font-size: 1em; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none; color: #333;
+        }
+        .control-btn img { height: 24px; vertical-align: middle; margin-right: 8px; }
+        .control-btn:hover { background-color: rgba(255, 255, 255, 1); }
+        .control-btn.disabled { opacity: 0.5; pointer-events: none; }
+
+        /* Стилі для вікторини */
+        .quiz-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 10001; background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px; padding: 25px; max-width: 90%; text-align: center;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            display: none;
+        }
+        .quiz-question { font-size: 1.5em; margin-bottom: 20px; color: #333; }
+        .quiz-options button {
+            display: block; width: 100%; padding: 12px; margin-bottom: 10px;
+            border: 2px solid #4CAF50; border-radius: 10px;
+            background-color: #f0f0f0; cursor: pointer; font-size: 1.1em;
+            transition: background-color 0.3s;
+        }
+        .quiz-options button:hover { background-color: #e0e0e0; }
+        .quiz-options button.correct { background-color: #4CAF50; color: white; border-color: #4CAF50; }
+        .quiz-options button.incorrect { background-color: #f44336; color: white; border-color: #f44336; }
+        .quiz-result { margin-top: 20px; font-size: 1.3em; font-weight: bold; }
     </style>
 </head>
 <body>
-    <a-scene mindar-image="imageTargetSrc: ./assets/targets/mycard.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;" embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" id="ar-scene">
+    <div class="arjs-loader" id="loader">
+        <div class="pulse">✨ Smart Lessa AR-візитка ✨</div>
+        <div style="margin-top: 20px; font-size: 1.2em;">Наведіть камеру на візитку! 😊</div>
+    </div>
+
+    <div id="quiz-container" class="quiz-container">
+        <div class="quiz-question" id="quiz-question"></div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-result" id="quiz-result"></div>
+    </div>
+
+    <a-scene
+        mindar-image="imageTargetSrc: ./targets/mycard.mind;"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        loading-screen="enabled: false"
+        embedded
+        renderer="colorManagement: true; physicallyCorrectLights: true;"
+    >
         <a-assets>
-            <img id="main-photo" src="./assets/images/photo.jpg">
-            <video id="main-video" src="./assets/video/lesa.mp4" loop="false" preload="auto"></video>
-            <img id="icon-googlesites" src="./assets/icons/googlesites.png">
-            <img id="icon-goy" src="./assets/icons/goy.png">
-            <img id="icon-instagram" src="./assets/icons/instagram.png">
-            <img id="icon-play" src="./assets/icons/play.png">
-            <img id="icon-telegram" src="./assets/icons/telegram.png">
-            <img id="icon-youtube" src="./assets/icons/youtube.png">
+            <img id="photo-texture" src="./assets/images/photo.jpg">
+            <video id="lesa-video" src="./assets/video/lesa.mp4" preload="auto" loop="false"></video>
+            
+            <img id="youtube-icon" src="./assets/icons/youtube.png">
+            <img id="telegram-icon" src="./assets/icons/telegram.png">
+            <img id="googlesites-icon" src="./assets/icons/googlesites.png">
+            <img id="instagram-icon" src="./assets/icons/instagram.png">
+            <img id="play-icon" src="./assets/icons/play.png">
+            <img id="goy-icon" src="./assets/icons/goy.png">
         </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000; objects: .clickable"></a-camera>
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
-            <a-plane src="#main-photo" position="0 0 0" height="1" width="1" rotation="0 0 0" class="clickable"></a-plane>
+            <a-image src="#photo-texture" position="0 0 -0.1" height="1.0" width="0.75"></a-image>
 
-            <a-video src="#main-video" position="-1.5 0 0" height="0.8" width="1.42" rotation="0 0 0" visible="false" id="slide-video"></a-video>
-
-            <a-plane src="#icon-play" position="-1.5 0 0.01" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="video-play-icon"></a-plane>
-
-            <a-plane src="#icon-goy" position="0.75 0 0" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="game-button"></a-plane>
-
-            <a-plane src="#icon-googlesites" position="-0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="googlesites-button" visible="false"></a-plane>
-            <a-plane src="#icon-instagram" position="0 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="instagram-button" visible="false"></a-plane>
-            <a-plane src="#icon-telegram" position="0.2 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="telegram-button" visible="false"></a-plane>
-            <a-plane src="#icon-youtube" position="0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="youtube-button" visible="false"></a-plane>
+            <a-plane id="youtube-link" class="link-btn" width="0.2" height="0.2" position="0.5 -0.5 0" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="telegram-link" class="link-btn" width="0.2" height="0.2" position="0.2 -0.5 0" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="google-link" class="link-btn" width="0.2" height="0.2" position="-0.1 -0.5 0" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="instagram-link" class="link-btn" width="0.2" height="0.2" position="-0.4 -0.5 0" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="play-video-btn" class="video-btn" width="0.2" height="0.2" position="-0.7 -0.5 0" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;"></a-plane>
+            <a-plane id="quiz-btn" class="quiz-btn" width="0.2" height="0.2" position="-1.0 -0.5 0" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;"></a-plane>
+            
+            <a-video id="ar-video" src="#lesa-video" position="0.8 0 0" width="1.6" height="0.9" visible="false"></a-video>
         </a-entity>
     </a-scene>
 
-    <canvas id="quiz-canvas" width="400" height="300" style="display: none;"></canvas>
+    <div class="controls">
+        <button id="youtube-btn" class="control-btn"><img src="./assets/icons/youtube.png" alt="YouTube">YouTube</button>
+        <button id="telegram-btn" class="control-btn"><img src="./assets/icons/telegram.png" alt="Telegram">Telegram</button>
+        <button id="google-btn" class="control-btn"><img src="./assets/icons/googlesites.png" alt="Google Sites">Google Site</button>
+        <button id="instagram-btn" class="control-btn"><img src="./assets/icons/instagram.png" alt="Instagram">Instagram</button>
+        <button id="play-video-html-btn" class="control-btn"><img src="./assets/icons/play.png" alt="Play">Play Video</button>
+        <button id="quiz-start-btn" class="control-btn"><img src="./assets/icons/goy.png" alt="Quiz">Quiz</button>
+    </div>
 
     <script>
-        const scene = document.querySelector('a-scene');
-        const slideVideo = document.querySelector('#slide-video');
-        const videoPlayIcon = document.querySelector('#video-play-icon');
-        const gameButton = document.querySelector('#game-button');
-        const videoElement = document.querySelector('#main-video');
-        const quizEntity = document.querySelector('#quiz-entity');
-        const quizPlane = document.querySelector('#quiz-plane');
-        const quizCanvas = document.getElementById('quiz-canvas');
-        const ctx = quizCanvas.getContext('2d');
+        document.addEventListener("DOMContentLoaded", function() {
+            const loader = document.getElementById('loader');
+            const targetEntity = document.querySelector('[mindar-image-target]');
 
-        // Social media buttons
-        const socialButtons = {
-            'googlesites-button': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
-            'instagram-button': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85',
-            'telegram-button': 'https://t.me/+Ck0ua_cmlI84Yjcy',
-            'youtube-button': 'https://www.youtube.com/@23SmartLessa32'
-        };
+            // Посилання на 3D-елементи сцени
+            const arVideoEl = document.getElementById('ar-video');
+            const videoAsset = document.getElementById('lesa-video');
+            const playVideoBtn = document.getElementById('play-video-btn');
+            const quizBtn = document.getElementById('quiz-btn');
 
-        // Дія для кліку на іконки соцмереж
-        Object.keys(socialButtons).forEach(id => {
-            const button = document.querySelector(`#${id}`);
-            if (button) {
-                button.addEventListener('click', () => {
-                    window.open(socialButtons[id], '_blank');
+            // Посилання на HTML-елементи
+            const quizContainer = document.getElementById('quiz-container');
+            const quizStartBtn = document.getElementById('quiz-start-btn');
+            const quizQuestionEl = document.getElementById('quiz-question');
+            const quizOptionsEl = document.getElementById('quiz-options');
+            const quizResultEl = document.getElementById('quiz-result');
+
+            let isQuizActive = false;
+            let currentQuestionIndex = 0;
+            const quizData = [
+                {
+                    question: "Яке місто є столицею України?",
+                    options: ["Львів", "Одеса", "Київ", "Харків"],
+                    answer: "Київ"
+                },
+                {
+                    question: "Як називається головна річка України?",
+                    options: ["Дністер", "Дніпро", "Десна", "Дунай"],
+                    answer: "Дніпро"
+                }
+            ];
+
+            function startQuiz() {
+                isQuizActive = true;
+                currentQuestionIndex = 0;
+                quizContainer.style.display = 'block';
+                showQuestion();
+            }
+
+            function showQuestion() {
+                const currentQuestion = quizData[currentQuestionIndex];
+                quizQuestionEl.textContent = currentQuestion.question;
+                quizOptionsEl.innerHTML = '';
+                quizResultEl.textContent = '';
+                currentQuestion.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.addEventListener('click', () => checkAnswer(option));
+                    quizOptionsEl.appendChild(button);
                 });
             }
-        });
 
-        // Дія для кліку на ігрову іконку
-        if (gameButton) {
-            gameButton.addEventListener('click', () => {
+            function checkAnswer(selectedOption) {
+                const currentQuestion = quizData[currentQuestionIndex];
+                const isCorrect = selectedOption === currentQuestion.answer;
+                
+                // Візуальна індикація
+                Array.from(quizOptionsEl.children).forEach(button => {
+                    button.disabled = true;
+                    if (button.textContent === currentQuestion.answer) {
+                        button.classList.add('correct');
+                    } else if (button.textContent === selectedOption) {
+                        button.classList.add('incorrect');
+                    }
+                });
+
+                if (isCorrect) {
+                    quizResultEl.textContent = 'Правильно! ✅';
+                    setTimeout(() => {
+                        currentQuestionIndex++;
+                        if (currentQuestionIndex < quizData.length) {
+                            showQuestion();
+                        } else {
+                            quizResultEl.textContent = 'Вікторина завершена! Молодець! 🏆';
+                            setTimeout(() => {
+                                quizContainer.style.display = 'none';
+                                isQuizActive = false;
+                            }, 2000);
+                        }
+                    }, 1500);
+                } else {
+                    quizResultEl.textContent = 'Неправильно. Спробуй ще раз. ❌';
+                    setTimeout(() => {
+                        quizResultEl.textContent = '';
+                        Array.from(quizOptionsEl.children).forEach(button => {
+                            button.disabled = false;
+                            button.classList.remove('correct', 'incorrect');
+                        });
+                    }, 1500);
+                }
+            }
+            
+            // Логіка для AR-кнопок
+            const arVideo = document.getElementById('ar-video');
+            const arVideoBtn = document.getElementById('play-video-btn');
+            arVideoBtn.addEventListener('click', () => {
+                arVideo.setAttribute('visible', 'true');
+                arVideo.play();
+            });
+
+            const arQuizBtn = document.getElementById('quiz-btn');
+            arQuizBtn.addEventListener('click', () => {
                 startQuiz();
             });
-        }
 
-        // Виявлення цілі
-        scene.addEventListener('targetFound', event => {
-            slideVideo.setAttribute('visible', true);
-            slideVideo.setAttribute('animation', 'property: position; to: -0.75 0 0; dur: 1000; easing: easeInOutQuad');
-
-            videoPlayIcon.setAttribute('visible', true);
-            videoPlayIcon.setAttribute('animation', 'property: position; to: -0.75 0 0.01; dur: 1000; easing: easeInOutQuad');
-
-            gameButton.setAttribute('visible', true);
-            gameButton.setAttribute('animation', 'property: position; to: 0.75 0 0; dur: 1000; easing: easeInOutQuad');
-
-            Object.keys(socialButtons).forEach(id => {
-                const button = document.querySelector(`#${id}`);
-                button.setAttribute('visible', true);
-                button.setAttribute('animation', 'property: scale; from: 0 0 0; to: 1 1 1; dur: 500; easing: easeInOutQuad');
-            });
-        });
-
-        // Втрата цілі
-        scene.addEventListener('targetLost', event => {
-            slideVideo.setAttribute('visible', false);
-            slideVideo.setAttribute('position', '-1.5 0 0');
-            if (videoElement) videoElement.pause();
-
-            videoPlayIcon.setAttribute('visible', false);
-            videoPlayIcon.setAttribute('position', '-1.5 0 0.01');
-
-            gameButton.setAttribute('visible', false);
-            gameButton.setAttribute('position', '1.5 0 0');
-
-            Object.keys(socialButtons).forEach(id => {
-                const button = document.querySelector(`#${id}`);
-                button.setAttribute('visible', false);
-            });
-
-            hideQuiz();
-        });
-
-        // Запуск та зупинка відео
-        if (videoPlayIcon) {
-            videoPlayIcon.addEventListener('click', () => {
-                if (videoElement) {
-                    videoElement.play();
-                    videoPlayIcon.setAttribute('visible', false);
+            // Обробники для HTML-кнопок
+            document.getElementById('youtube-btn').addEventListener('click', () => { window.open('https://www.youtube.com/@23SmartLessa32', '_blank'); });
+            document.getElementById('telegram-btn').addEventListener('click', () => { window.open('https://t.me/+Ck0ua_cmlI84Yjcy', '_blank'); });
+            document.getElementById('google-btn').addEventListener('click', () => { window.open('https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0', '_blank'); });
+            document.getElementById('instagram-btn').addEventListener('click', () => { window.open('https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85', '_blank'); });
+            document.getElementById('play-video-html-btn').addEventListener('click', () => {
+                if (arVideo.components && arVideo.components.material) {
+                    arVideo.setAttribute('visible', 'true');
+                    arVideo.play();
+                } else {
+                    alert('Відео не готове до відтворення. Спробуйте ще раз.');
                 }
             });
-        }
+            document.getElementById('quiz-start-btn').addEventListener('click', startQuiz);
 
-        if (videoElement) {
-            videoElement.addEventListener('ended', () => {
-                if (videoPlayIcon) {
-                    videoPlayIcon.setAttribute('visible', true);
-                }
-            });
-        }
-
-        // Quiz logic
-        const questions = [
-            {
-                question: "Яка столиця України?",
-                options: ["Київ", "Львів", "Одеса", "Харків"],
-                answer: "Київ"
-            },
-            {
-                question: "Яка найдовша річка в Україні?",
-                options: ["Дніпро", "Дністер", "Південний Буг", "Дунай"],
-                answer: "Дніпро"
-            },
-            {
-                question: "Яке море омиває Україну на півдні?",
-                options: ["Чорне море", "Балтійське море", "Середземне море", "Каспійське море"],
-                answer: "Чорне море"
-            }
-        ];
-
-        let currentQuestion = 0;
-        let score = 0;
-        let feedback = '';
-        let feedbackColor = '';
-        let isQuizEnded = false;
-
-        function startQuiz() {
-            currentQuestion = 0;
-            score = 0;
-            feedback = '';
-            isQuizEnded = false;
-            quizEntity.setAttribute('visible', true);
-            drawQuiz();
-        }
-
-        function drawQuiz() {
-            ctx.clearRect(0, 0, 400, 300);
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, 400, 300);
-            ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
-            ctx.textAlign = 'left';
-
-            if (currentQuestion < questions.length) {
-                const q = questions[currentQuestion];
-                ctx.fillText(q.question, 20, 30);
-                q.options.forEach((opt, i) => {
-                    ctx.fillStyle = 'lightblue';
-                    ctx.fillRect(20, 50 + i * 60, 360, 40);
-                    ctx.fillStyle = 'black';
-                    ctx.fillText(opt, 30, 75 + i * 60);
+            // Логіка відстеження маркера
+            if (targetEntity) {
+                targetEntity.addEventListener('targetFound', () => {
+                    console.log("🎯 Маркер знайдено!");
+                    loader.style.display = 'none';
                 });
-                if (feedback) {
-                    ctx.fillStyle = feedbackColor;
-                    ctx.fillText(feedback, 20, 280);
-                }
+                targetEntity.addEventListener('targetLost', () => {
+                    console.log("ℹ️ Маркер втрачено.");
+                    loader.style.display = 'flex';
+                    // Зупиняємо відео, якщо маркер втрачено
+                    arVideo.pause();
+                    arVideo.currentTime = 0;
+                    arVideo.setAttribute('visible', 'false');
+                });
             } else {
-                isQuizEnded = true;
-                ctx.fillText(`Гра завершена! Твій рахунок: ${score}/${questions.length}`, 20, 30);
-                ctx.fillStyle = 'green';
-                ctx.fillRect(100, 200, 200, 40);
-                ctx.fillStyle = 'white';
-                ctx.fillText('Завершити', 150, 225);
+                console.error('Елемент mindar-image-target не знайдено!');
             }
-        }
-
-        function checkAnswer(selected) {
-            const correct = questions[currentQuestion].answer;
-            if (selected === correct) {
-                score++;
-                feedback = 'Правильно!';
-                feedbackColor = 'green';
-            } else {
-                feedback = `Неправильно! Правильна відповідь: ${correct}`;
-                feedbackColor = 'red';
-            }
-            drawQuiz();
-            setTimeout(() => {
-                feedback = '';
-                currentQuestion++;
-                drawQuiz();
-            }, 2000);
-        }
-
-        function hideQuiz() {
-            quizEntity.setAttribute('visible', false);
-        }
-
-        if (quizPlane) {
-            quizPlane.addEventListener('click', (evt) => {
-                if (!evt.detail.intersection) return;
-
-                const uv = evt.detail.intersection.uv;
-                const clickX = uv.x * 400;
-                const clickY = (1 - uv.y) * 300;
-                if (currentQuestion < questions.length) {
-                    if (clickX > 20 && clickX < 380 && clickY > 50 && clickY < 270) {
-                        const index = Math.floor((clickY - 50) / 60);
-                        if (index >= 0 && index < questions[currentQuestion].options.length) {
-                            const selected = questions[currentQuestion].options[index];
-                            checkAnswer(selected);
-                        }
-                    }
-                } else if (isQuizEnded) {
-                    if (clickX > 100 && clickX < 300 && clickY > 200 && clickY < 240) {
-                        hideQuiz();
-                    }
-                }
-            });
-        }
+        });
     </script>
 </body>
 </html>
