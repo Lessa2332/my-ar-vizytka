@@ -36,7 +36,7 @@
             <!-- Main photo plane -->
             <a-plane src="#main-photo" position="0 0 0" height="1" width="1" rotation="0 0 0" class="clickable" id="main-plane"></a-plane>
 
-            <!-- Video entity, initially hidden to the left -->
+            <!-- Video entity, initially hidden to the left (no clickable class) -->
             <a-video src="#main-video" position="-1.5 0 0" height="0.8" width="1.42" rotation="0 0 0" visible="false" id="slide-video"></a-video>
 
             <!-- Play icon for video -->
@@ -46,11 +46,11 @@
             <a-plane src="#icon-goy" position="1.5 0 0" height="0.2" width="0.2" rotation="0 0 0" visible="false" class="clickable" id="game-button"></a-plane>
 
             <!-- Social media buttons, initially hidden -->
-            <a-plane src="#icon-googlesites" position="-0.4 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="googlesites-button" visible="false"></a-plane>
-            <a-plane src="#icon-goy" position="-0.2 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="goy-button" visible="false"></a-plane>
-            <a-plane src="#icon-instagram" position="0 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="instagram-button" visible="false"></a-plane>
-            <a-plane src="#icon-telegram" position="0.2 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="telegram-button" visible="false"></a-plane>
-            <a-plane src="#icon-youtube" position="0.4 -0.6 0" height="0.1" width="0.1" rotation="0 0 0" class="clickable" id="youtube-button" visible="false"></a-plane>
+            <a-plane src="#icon-googlesites" position="-0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="googlesites-button" visible="false"></a-plane>
+            <a-plane src="#icon-goy" position="-0.2 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="goy-button" visible="false"></a-plane>
+            <a-plane src="#icon-instagram" position="0 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="instagram-button" visible="false"></a-plane>
+            <a-plane src="#icon-telegram" position="0.2 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="telegram-button" visible="false"></a-plane>
+            <a-plane src="#icon-youtube" position="0.4 -0.6 0" height="0.15" width="0.15" rotation="0 0 0" class="clickable" id="youtube-button" visible="false"></a-plane>
 
             <!-- Quiz entity with canvas plane -->
             <a-entity id="quiz-entity" position="0 0.5 0" scale="1 1 1" visible="false">
@@ -122,7 +122,7 @@
             // Hide social buttons
             Object.keys(socialButtons).forEach(id => {
                 const button = document.querySelector(`#${id}`);
-                button.setAttribute('visible', false);
+                button.setAttribute('visible', false');
             });
 
             hideQuiz();
@@ -245,7 +245,7 @@
         quizPlane.addEventListener('click', (evt) => {
             const uv = evt.detail.intersection.uv;
             const clickX = uv.x * 400;
-            const clickY = (1 - uv.y) * 300; // 0 at bottom, 300 at top? No, uv.y 1 top, 0 bottom, so 1-uv.y *300 is 0 top, 300 bottom.
+            const clickY = (1 - uv.y) * 300;
             if (currentQuestion < questions.length) {
                 if (clickX > 20 && clickX < 380 && clickY > 50 && clickY < 270) {
                     const index = Math.floor((clickY - 50) / 60);
