@@ -149,6 +149,23 @@
             <!-- Центральне фото (Z = -0.1 — найближче до камери) -->
             <a-image src="#photo-texture" position="0 0 -0.1" height="0.75" width="1.0" rotation="0 0 0"></a-image>
             
+            <!-- ✅ БІГУЧА СТРІЧКА ТЕКСТУ з реального контенту ваших ресурсів -->
+            <a-entity
+                id="ticker"
+                position="0 -0.2 0.05"
+                text="value: Навчаю з любов’ю • AR-квести — це новий підхід до навчання! • Простір інноваційного навчання та розваг! • 85% дітей краще засвоюють матеріал через гру! • Розважальні інтерактивні проєкти; align: left; width: 12; color: #FF4500; font: https://cdn.jsdelivr.net/gh/aframevr/aframe@master/src/style/fonts/Roboto-msdf.json; negate: false; shader: msdf; letterSpacing: -2"
+                scale="1.0 1.0 1.0">
+                <a-animation
+                    attribute="position"
+                    from="-5 -0.2 0.05"
+                    to="5 -0.2 0.05"
+                    dur="14000"
+                    easing="linear"
+                    repeat="indefinite"
+                    fill="forwards">
+                </a-animation>
+            </a-entity>
+
             <!-- Верхній ряд кнопок -->
             <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.6 0.4 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Instagram — фото та сторіс про AR-проєкти"></a-plane>
             <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="-0.3 0.4 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="YouTube канал Smart Lessa — навчальні відео, огляди AR-проєктів, інструкції та ідеї для використання доповненої реальності в освіті та розвагах."></a-plane>
@@ -293,7 +310,7 @@
                 currentQuestionIndex = 0;
             });
 
-            // ✅ Оновлено: Обробники посилань з точними описами з ваших ресурсів
+            // ✅ Виправлено: прибрано зайві пробіли в URL
             const links = {
                 'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
                 'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
