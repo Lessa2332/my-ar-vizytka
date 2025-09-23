@@ -336,42 +336,51 @@
             if (btn) btn.addEventListener('click', () => window.open(links[id], '_blank', 'noopener,noreferrer'));
         });
 
-        if (playVideoBtn) {
-            playVideoBtn.addEventListener('click', () => {
-                if (isVideoPlaying) return;
-                console.log("🎬 Клік по кнопці ВІДЕО");
-                isVideoPlaying = true;
-                arVideoEl.setAttribute('visible', true);
-                arVideoEl.setAttribute('position', '0 -0.5 0.1');
-                arVideoEl.setAttribute('animation__appear', {
+if (playVideoBtn) {
+    playVideoBtn.addEventListener('click', () => {
+        if (isVideoPlaying) return;
+        console.log("🎬 Клік по кнопці ВІДЕО");
+        isVideoPlaying = true;
+
+        // Перевіряємо поточний стан відео
+        arVideoEl.setAttribute('visible', true);
+        arVideoEl.setAttribute('position', '0 -0.5 0.1');
+
+        // Скидаємо попередні анімації, щоб уникнути конфліктів
+        arVideoEl.removeAttribute('animation__appear');
+        arVideoEl.removeAttribute('animation__disappear');
+
+        // Ланцюжок анімацій
+        arVideoEl.setAttribute('animation__appear', {
+            property: 'position',
+            to: '0 1.2 0.1',
+            dur: 700,
+            easing: 'easeOutCubic',
+            delay: 200
+        });
+
+        const videoElement = arVideoEl.components.material.material.map.image;
+        if (videoElement && typeof videoElement.play === 'function') {
+            setTimeout(() => {
+                videoElement.play().catch(err => console.error('Помилка відео:', err));
+            }, 200);
+            videoElement.onended = () => {
+                arVideoEl.setAttribute('animation__disappear', {
                     property: 'position',
-                    to: '0 1.2 0.1',
-                    dur: 700,
-                    easing: 'easeOutCubic',
-                    delay: 200
+                    to: '0 -0.5 0.1',
+                    dur: 500,
+                    easing: 'easeInQuad'
                 });
-                const videoElement = arVideoEl.components.material.material.map.image;
-                if (videoElement && typeof videoElement.play === 'function') {
-                    setTimeout(() => {
-                        videoElement.play().catch(err => console.error('Помилка відео:', err));
-                    }, 200);
-                    videoElement.onended = () => {
-                        arVideoEl.setAttribute('animation__disappear', {
-                            property: 'position',
-                            to: '0 -0.5 0.1',
-                            dur: 500,
-                            easing: 'easeInQuad'
-                        });
-                        setTimeout(() => {
-                            arVideoEl.setAttribute('visible', false);
-                            isVideoPlaying = false;
-                        }, 500);
-                    };
-                } else {
+                setTimeout(() => {
+                    arVideoEl.setAttribute('visible', false);
                     isVideoPlaying = false;
-                }
-            });
+                }, 500);
+            };
+        } else {
+            isVideoPlaying = false;
         }
+    });
+}
 
         if (gameBtn) {
             gameBtn.addEventListener('click', () => {
@@ -472,5 +481,6 @@
 </script>
 </body>
 </html>
+
 
 
