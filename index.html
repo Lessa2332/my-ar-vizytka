@@ -127,15 +127,15 @@
         <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
 
         <a-assets timeout="30000">
-            <img id="photo-texture" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg">
+            <img id="photo-texture" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg"> <!-- Додано для центрального фото -->
             <video id="lesa-video" src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" preload="auto" loop="false"></video>
             <img id="youtube-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png">
             <img id="telegram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png">
             <img id="googlesites-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png">
             <img id="instagram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png">
-            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png">     <!-- ▶️ ВІДЕО -->
-            <img id="goy-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png">       <!-- 🎮 ГРА -->
-            <img id="play2-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play2.png">   <!-- 🖼️ ГАЛЕРЕЯ -->
+            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png"> <!-- ▶️ для відео -->
+            <img id="game-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png"> <!-- 🎮 для гри -->
+            <img id="gallery-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play2.png"> <!-- 🖼️ для галереї -->
             <!-- Фото для галереї -->
             <img id="photo1" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo1.jpg">
             <img id="photo2" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo2.jpg">
@@ -143,7 +143,7 @@
             <img id="photo4" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo4.jpg">
         </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera> <!-- Вимкнено look-controls для кращого raycasting -->
 
         <a-entity mindar-image-target="targetIndex: 0">
             <!-- Центральне фото -->
@@ -166,21 +166,21 @@
                 </a-animation>
             </a-entity>
 
-            <!-- 🔼 Верхній ряд кнопок — ПІДНЯТО ВИЩЕ (y=0.45) -->
+            <!-- Верхній ряд кнопок -->
             <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.4 0.45 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Instagram — фото та сторіс про AR-проєкти"></a-plane>
             <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="-0.15 0.45 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="QuestARia – квести, що оживають у твоєму смартфоні!"></a-plane>
             <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.15 0.45 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="AR_HUB — простір інноваційного навчання та розваг!"></a-plane>
             <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.4 0.45 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="QuestARia – квести, що оживають у твоєму смартфоні!"></a-plane>
             
-            <!-- Нижній ряд кнопок -->
-            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.6 -0.4 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
-            <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати освітню гру"></a-plane>
-            <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.05" rotation="0 0 0" material="src: #play2-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею фото"></a-plane>
+            <!-- Нижній ряд кнопок -- з вищим z (position z=0.06 для "попереду") -->
+            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.6 -0.4 0.06" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
+            <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.06" rotation="0 0 0" material="src: #game-icon; transparent: true; opacity: 1;" aria-label="Розпочати освітню гру"></a-plane>
+            <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.06" rotation="0 0 0" material="src: #gallery-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею фото"></a-plane>
 
             <!-- Підписи під кнопками -->
-            <a-text value="Відео" position="-0.6 -0.55 0.06" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
-            <a-text value="Гра" position="0 -0.55 0.06" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
-            <a-text value="Галерея" position="0.6 -0.55 0.06" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
+            <a-text value="Відео" position="-0.6 -0.55 0.07" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
+            <a-text value="Гра" position="0 -0.55 0.07" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
+            <a-text value="Галерея" position="0.6 -0.55 0.07" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
 
             <!-- Відео -->
             <a-video 
@@ -189,8 +189,7 @@
                 position="0 -0.5 0.1" 
                 width="1.6" 
                 height="0.9" 
-                visible="false"
-                autoplay>
+                visible="false">
             </a-video>
 
             <!-- Галерея фото -->
@@ -228,13 +227,14 @@
             const galleryNext = document.getElementById('gallery-next');
             const closeGalleryUI = document.getElementById('close-gallery-ui');
 
-            // 🔍 Перевірка, чи знайдені елементи
+            // 🔍 Перевірка елементів
             if (!playVideoBtn) console.error('❗ Кнопка відео не знайдена!');
             if (!gameBtn) console.error('❗ Кнопка гри не знайдена!');
             if (!galleryBtn) console.error('❗ Кнопка галереї не знайдена!');
             if (!galleryPlaneEl) console.error('❗ Площина галереї не знайдена!');
 
             let isQuizActive = false;
+            let isVideoPlaying = false; // Додано для перевірки дубль-кліків
             let currentQuestionIndex = 0;
             let currentPhotoIndex = 0;
             const totalPhotos = 4;
@@ -254,9 +254,11 @@
                 alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення.');
             });
 
-            // Логіка вікторини
+            // Логіка вікторини (без змін, але скидаємо індекс при закритті)
             function startQuiz() {
+                if (isQuizActive) return; // Запобігаємо дублю
                 isQuizActive = true;
+                currentQuestionIndex = 0; // Скидаємо при новому запуску
                 quizContainer.style.display = 'block';
                 showQuestion();
             }
@@ -321,7 +323,7 @@
                 currentQuestionIndex = 0;
             });
 
-            // ✅ Виправлено: прибрано зайві пробіли в URL
+            // Лінки (без змін)
             const links = {
                 'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
                 'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
@@ -330,111 +332,113 @@
             };
 
             Object.keys(links).forEach(id => {
-                document.getElementById(id).addEventListener('click', () => {
-                    window.open(links[id], '_blank', 'noopener,noreferrer');
-                });
+                const btn = document.getElementById(id);
+                if (btn) btn.addEventListener('click', () => window.open(links[id], '_blank', 'noopener,noreferrer'));
             });
 
-            // ✅ ВІДЕО: Виїжджає з-під фото вгору
-            playVideoBtn.addEventListener('click', () => {
-                console.log("🎬 Клік по кнопці ВІДЕО");
-                arVideoEl.setAttribute('visible', true);
-                arVideoEl.setAttribute('position', '0 -0.5 0.1');
-                arVideoEl.setAttribute('animation__appear', {
-                    property: 'position',
-                    to: '0 1.2 0.1',
-                    dur: 700,
-                    easing: 'easeOutCubic',
-                    delay: 200
-                });
-                const videoElement = arVideoEl.components.material.material.map.image;
-                if (videoElement && typeof videoElement.play === 'function') {
-                    setTimeout(() => {
-                        videoElement.play().catch(err => console.error('Помилка відео:', err));
-                    }, 200);
-                    videoElement.onended = () => {
-                        arVideoEl.setAttribute('animation__disappear', {
-                            property: 'position',
-                            to: '0 -0.5 0.1',
-                            dur: 500,
-                            easing: 'easeInQuad'
-                        });
+            // ✅ ВІДЕО: З перевіркою дубля
+            if (playVideoBtn) {
+                playVideoBtn.addEventListener('click', () => {
+                    if (isVideoPlaying) return;
+                    console.log("🎬 Клік по кнопці ВІДЕО");
+                    isVideoPlaying = true;
+                    arVideoEl.setAttribute('visible', true);
+                    arVideoEl.setAttribute('position', '0 -0.5 0.1');
+                    arVideoEl.setAttribute('animation__appear', {
+                        property: 'position',
+                        to: '0 1.2 0.1',
+                        dur: 700,
+                        easing: 'easeOutCubic',
+                        delay: 200
+                    });
+                    const videoElement = arVideoEl.components.material.material.map.image;
+                    if (videoElement && typeof videoElement.play === 'function') {
                         setTimeout(() => {
-                            arVideoEl.setAttribute('visible', false);
-                        }, 500);
-                    };
-                }
-            });
-
-            // ✅ ГРА: Відкриває вікторину
-            gameBtn.addEventListener('click', () => {
-                console.log("🎮 Клік по кнопці ГРА");
-                if (!isQuizActive) {
-                    startQuiz();
-                }
-            });
-
-            // ✅ ГАЛЕРЕЯ: Виїжджає з-під фото вниз
-            galleryBtn.addEventListener('click', () => {
-                console.log("🖼️ Клік по кнопці ГАЛЕРЕЯ");
-                galleryPlaneEl.setAttribute('visible', true);
-                galleryPlaneEl.setAttribute('position', '0 -0.5 0.1');
-                galleryPlaneEl.setAttribute('animation__appear', {
-                    property: 'position',
-                    to: '0 -0.8 0.1',
-                    dur: 600,
-                    easing: 'easeOutCubic',
-                    delay: 200
+                            videoElement.play().catch(err => console.error('Помилка відео:', err));
+                        }, 200);
+                        videoElement.onended = () => {
+                            arVideoEl.setAttribute('animation__disappear', {
+                                property: 'position',
+                                to: '0 -0.5 0.1',
+                                dur: 500,
+                                easing: 'easeInQuad'
+                            });
+                            setTimeout(() => {
+                                arVideoEl.setAttribute('visible', false);
+                                isVideoPlaying = false;
+                            }, 500);
+                        };
+                    } else {
+                        isVideoPlaying = false;
+                    }
                 });
-            });
+            }
+
+            // ✅ ГРА: Запуск вікторини
+            if (gameBtn) {
+                gameBtn.addEventListener('click', () => {
+                    console.log("🎮 Клік по кнопці ГРА");
+                    startQuiz();
+                });
+            }
+
+            // ✅ ГАЛЕРЕЯ: Анімація plane
+            if (galleryBtn) {
+                galleryBtn.addEventListener('click', () => {
+                    console.log("🖼️ Клік по кнопці ГАЛЕРЕЯ");
+                    galleryPlaneEl.setAttribute('visible', true);
+                    galleryPlaneEl.setAttribute('position', '0 -0.5 0.1');
+                    galleryPlaneEl.setAttribute('animation__appear', {
+                        property: 'position',
+                        to: '0 -0.8 0.1',
+                        dur: 600,
+                        easing: 'easeOutCubic',
+                        delay: 200
+                    });
+                });
+            }
 
             // Обробник кліку на площині галереї (відкриває UI)
-            galleryPlaneEl.addEventListener('click', () => {
-                galleryPlaneEl.setAttribute('animation__return', {
-                    property: 'position',
-                    to: '0 -0.5 0.1',
-                    dur: 400,
-                    easing: 'easeInQuad'
+            if (galleryPlaneEl) {
+                galleryPlaneEl.addEventListener('click', () => {
+                    galleryPlaneEl.setAttribute('animation__return', {
+                        property: 'position',
+                        to: '0 -0.5 0.1',
+                        dur: 400,
+                        easing: 'easeInQuad'
+                    });
+                    setTimeout(() => {
+                        galleryPlaneEl.setAttribute('visible', false);
+                        showGalleryPhoto(0);
+                        galleryUI.style.display = 'block';
+                    }, 400);
                 });
-                setTimeout(() => {
-                    galleryPlaneEl.setAttribute('visible', false);
-                    showGalleryPhoto(0);
-                    galleryUI.style.display = 'block';
-                }, 400);
-            });
+            }
 
             function showGalleryPhoto(index) {
                 currentPhotoIndex = index;
                 const imgElement = document.getElementById(photoIds[index]);
+                if (!imgElement) {
+                    console.error(`Зображення ${photoIds[index]} не знайдено!`);
+                    return;
+                }
                 galleryImg.src = imgElement.src;
                 galleryCounter.textContent = `Фото ${index + 1} з ${totalPhotos}`;
             }
 
-            galleryPrev.addEventListener('click', () => {
-                if (currentPhotoIndex > 0) showGalleryPhoto(currentPhotoIndex - 1);
-            });
+            if (galleryPrev) galleryPrev.addEventListener('click', () => { if (currentPhotoIndex > 0) showGalleryPhoto(currentPhotoIndex - 1); });
+            if (galleryNext) galleryNext.addEventListener('click', () => { if (currentPhotoIndex < totalPhotos - 1) showGalleryPhoto(currentPhotoIndex + 1); });
+            if (closeGalleryUI) closeGalleryUI.addEventListener('click', () => { galleryUI.style.display = 'none'; });
 
-            galleryNext.addEventListener('click', () => {
-                if (currentPhotoIndex < totalPhotos - 1) showGalleryPhoto(currentPhotoIndex + 1);
-            });
-
-            closeGalleryUI.addEventListener('click', () => {
-                galleryUI.style.display = 'none';
-            });
-
-            // ✅ Лоадер: ховається при targetFound або через 4 секунди
+            // ✅ Лоадер
             let hasTargetBeenFound = false;
-
             if (targetEntity) {
                 targetEntity.addEventListener('targetFound', () => {
                     console.log("🎯 Маркер знайдено!");
                     hasTargetBeenFound = true;
                     loader.style.display = 'none';
                 });
-            } else {
-                console.error('Елемент mindar-image-target не знайдено!');
             }
-
             setTimeout(() => {
                 if (loader.style.display !== 'none') {
                     console.log('ℹ️ Лоадер приховано примусово.');
@@ -442,7 +446,7 @@
                 }
             }, 4000);
 
-            // ✅ Ручний Raycaster для тапів
+            // ✅ Покращений Raycaster для тапів/кліків
             sceneEl.addEventListener('loaded', () => {
                 const canvas = sceneEl.canvas;
 
@@ -456,12 +460,13 @@
                     return raycaster;
                 }
 
-                function handleClick(x, y) {
+                function handleClick(x, y, eventType = 'click') {
                     const raycaster = getMouseRay(x, y);
-                    const clickableElements = document.querySelectorAll('.clickable, #gallery-plane');
+                    // Шукаємо конкретно кнопки + gallery-plane
+                    const targetElements = [playVideoBtn, gameBtn, galleryBtn, galleryPlaneEl].filter(el => el && el.getAttribute('visible') !== 'false');
                     const intersections = [];
 
-                    clickableElements.forEach(el => {
+                    targetElements.forEach(el => {
                         const mesh = el.getObject3D('mesh');
                         if (mesh) {
                             const intersects = raycaster.intersectObject(mesh, true);
@@ -473,10 +478,15 @@
 
                     if (intersections.length > 0) {
                         intersections.sort((a, b) => a.distance - b.distance);
-                        intersections[0].el.emit('click');
+                        const closestEl = intersections[0].el;
+                        console.log(`🎯 Клік на ${closestEl.id} (відстань: ${intersections[0].distance.toFixed(2)})`);
+                        closestEl.emit(eventType); // Еміт 'click'
+                    } else {
+                        console.log('❌ Клік не перехоплено — жоден елемент не знайдено');
                     }
                 }
 
+                // Мобільні: touch
                 canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
                 canvas.addEventListener('touchend', e => {
                     e.preventDefault();
@@ -485,7 +495,10 @@
                         handleClick(touch.clientX, touch.clientY);
                     }
                 }, { passive: false });
+
+                // Десктоп: click + mouseup (fallback)
                 canvas.addEventListener('click', e => handleClick(e.clientX, e.clientY));
+                canvas.addEventListener('mouseup', e => handleClick(e.clientX, e.clientY, 'mouseup')); // Додатковий для стабільності
             });
         });
     </script>
