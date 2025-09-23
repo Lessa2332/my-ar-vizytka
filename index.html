@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="AR-візитка-портфоліо Smart Lessa — простір інноваційного навчання та розваг через AR-технології">
+    <meta name="description" content="AR-візитка Smart Lessa — простір інноваційного навчання та розваг через AR-технології. Освітні квести, інтерактивні проєкти, навчання через гру.">
     <title>🎨 Smart Lessa AR-візитка</title>
 
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
@@ -16,7 +16,7 @@
         a-scene { width: 100% !important; height: 100% !important; position: fixed; top: 0; left: 0; }
         .arjs-loader {
             height: 100%; width: 100%; position: absolute; top: 0; left: 0;
-            background: rgba(135, 206, 235, 0.9); z-index: 9999;
+            background: rgba(135, 206, 235, 0.95); z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             color: #FF4500; font-size: 1.8em; text-align: center; padding: 20px; box-sizing: border-box;
             font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
@@ -170,9 +170,9 @@
             
             <!-- Верхній ряд кнопок -->
             <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.6 0.4 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Instagram"></a-plane>
-            <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="-0.3 0.4 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="YouTube"></a-plane>
-            <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.0 0.4 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="AR_HUB — простір інноваційного навчання та розваг"></a-plane>
-            <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.3 0.4 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="QuestARia — освітні AR-квести, що оживають у вашому смартфоні"></a-plane>
+            <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="-0.3 0.4 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="Навчальні відео та огляди AR-проєктів"></a-plane>
+            <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.0 0.4 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="AR_HUB — простір інноваційного навчання та розваг! AR-технології, інтерактивні проєкти"></a-plane>
+            <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.3 0.4 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="QuestARia — освітні AR-квести, що оживають у вашому смартфоні! Навчання через гру"></a-plane>
             
             <!-- Нижній ряд кнопок -->
             <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.6 -0.4 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
@@ -315,8 +315,8 @@
             // Обробники посилань з актуальними описами
             const links = {
                 'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
-                'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy', // AR_HUB — простір інноваційного навчання
-                'google-btn': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0', // QuestARia — освітні AR-квести
+                'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
+                'google-btn': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
                 'instagram-btn': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85'
             };
 
@@ -343,24 +343,19 @@
             });
 
             // При втраті маркера — ховаємо відео назад
-            targetEntity.addEventListener('targetLost', () => {
-                if (arVideoEl.getAttribute('visible')) {
-                    arVideoEl.setAttribute('animation__exit', {
-                        property: 'position',
-                        to: '-1.5 0.8 0.05',
-                        dur: 800,
-                        easing: 'easeInOutQuad'
-                    });
-                    setTimeout(() => {
-                        arVideoEl.setAttribute('visible', false);
+            if (targetEntity) {
+                targetEntity.addEventListener('targetLost', () => {
+                    console.log("ℹ️ Маркер втрачено.");
+                    if (arVideoEl) {
                         const videoElement = arVideoEl.components.material.material.map.image;
                         if (videoElement) {
                             videoElement.pause();
                             videoElement.currentTime = 0;
                         }
-                    }, 800);
-                }
-            });
+                        arVideoEl.setAttribute('visible', false);
+                    }
+                });
+            }
 
             // Галерея: виїжджає ЗПРАВА → відкривається велике вікно
             galleryBtn.addEventListener('click', () => {
@@ -422,7 +417,36 @@
                 if (!isQuizActive) startQuiz();
             });
 
-            // Ручний Raycaster для тапів (ключове для мобільних)
+            // ✅ КРИТИЧНЕ ВИПРАВЛЕННЯ: Лоадер ховається або при знаходженні маркера, або через 4 секунди
+            let hasTargetBeenFound = false;
+
+            if (targetEntity) {
+                targetEntity.addEventListener('targetFound', () => {
+                    console.log("🎯 Маркер знайдено!");
+                    hasTargetBeenFound = true;
+                    loader.style.display = 'none';
+                    
+                    if (arVideoEl.getAttribute('visible')) {
+                        const videoElement = arVideoEl.components.material.material.map.image;
+                        if (videoElement && videoElement.paused) {
+                            videoElement.play().catch(err => console.error('Помилка відео:', err));
+                        }
+                    }
+                });
+            } else {
+                console.error('Елемент mindar-image-target не знайдено!');
+            }
+
+            // Fallback: приховуємо лоадер через 4 секунди, якщо маркер не знайдено
+            setTimeout(() => {
+                if (loader.style.display !== 'none') {
+                    console.log('ℹ️ Лоадер приховано примусово через таймаут.');
+                    loader.style.display = 'none';
+                    // Не показуємо alert, щоб не дратувати користувача
+                }
+            }, 4000);
+
+            // ✅ ГОЛОВНЕ: Ручний Raycaster для тапів на мобільних
             sceneEl.addEventListener('loaded', () => {
                 const canvas = sceneEl.canvas;
 
@@ -471,4 +495,3 @@
     </script>
 </body>
 </html>
-
