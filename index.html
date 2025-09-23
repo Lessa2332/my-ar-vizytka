@@ -65,7 +65,7 @@
             opacity: 0.8;
         }
 
-        /* Стиль для галереї в 3D (не повноекранна!) */
+        /* Стиль для галереї в 3D */
         #gallery-ui {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             z-index: 10002; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 12px; 
@@ -146,40 +146,40 @@
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
-            <!-- Центральне фото -->
+            <!-- Центральне фото (Z = -0.1 — найближче до камери) -->
             <a-image src="#photo-texture" position="0 0 -0.1" height="0.75" width="1.0" rotation="0 0 0"></a-image>
             
             <!-- Верхній ряд кнопок -->
-            <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.6 0.4 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Instagram"></a-plane>
+            <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.6 0.4 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Instagram — фото та сторіс про AR-проєкти"></a-plane>
             <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="-0.3 0.4 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="Навчальні відео та огляди AR-проєктів"></a-plane>
-            <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.0 0.4 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="AR_HUB — простір інноваційного навчання та розваг! AR-технології, інтерактивні проєкти"></a-plane>
-            <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.3 0.4 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="QuestARia — освітні AR-квести, що оживають у вашому смартфоні! Навчання через гру"></a-plane>
+            <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.0 0.4 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="AR_HUB — простір інноваційного навчання та розваг! Матеріали для дітей та дорослих, AR-технології, розважальні інтерактивні проєкти"></a-plane>
+            <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.3 0.4 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="QuestARia — освітні AR-квести, що оживають у вашому смартфоні! Розвивають логіку, увагу, пам’ять. Навчання через гру!"></a-plane>
             
             <!-- Нижній ряд кнопок -->
             <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.6 -0.4 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
             <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати освітню гру"></a-plane>
             <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.05" rotation="0 0 0" material="src: #play2-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею фото"></a-plane>
 
-            <!-- Відео — з’являється з-під фото -->
+            <!-- Відео — виїжджає ЗВЕРХУ, але ПОЗАДУ фото (Z = 0.1) -->
             <a-video 
                 id="ar-video" 
                 src="#lesa-video" 
-                position="0 -0.5 0.05" 
+                position="0 -0.5 0.1" 
                 width="1.6" 
                 height="0.9" 
                 visible="false"
                 autoplay>
             </a-video>
 
-            <!-- Галерея фото — з’являється з-під фото -->
+            <!-- Галерея фото — виїжджає ЗНИЗУ, але ПОЗАДУ фото (Z = 0.1) -->
             <a-plane 
                 id="gallery-plane" 
                 width="1.6" 
                 height="0.9" 
-                position="0 -0.5 0.05" 
+                position="0 -0.5 0.1" 
                 material="color: #222; opacity: 0.9" 
                 visible="false">
-                <a-text value="Натисніть, щоб переглянути" position="0 0 0.01" color="#FFF" align="center" width="3" scale="0.8 0.8 0.8"></a-text>
+                <a-text value="Натисніть, щоб переглянути" position="0 0 0.11" color="#FFF" align="center" width="3" scale="0.8 0.8 0.8"></a-text>
             </a-plane>
         </a-entity>
     </a-scene>
@@ -293,7 +293,7 @@
                 currentQuestionIndex = 0;
             });
 
-            // Обробники посилань
+            // ✅ ОНОВЛЕНО: Обробники посилань з точними описами
             const links = {
                 'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
                 'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
@@ -307,13 +307,13 @@
                 });
             });
 
-            // ✅ ВІДЕО: Висувається з-під фото вгору
+            // ✅ ВІДЕО: Висувається з-під фото вгору, ПОЗАДУ фото (Z=0.1)
             playVideoBtn.addEventListener('click', () => {
                 arVideoEl.setAttribute('visible', true);
-                arVideoEl.setAttribute('position', '0 -0.5 0.05'); // Початок: під фото
+                arVideoEl.setAttribute('position', '0 -0.5 0.1');
                 arVideoEl.setAttribute('animation__appear', {
                     property: 'position',
-                    to: '0 1.2 0.05', // Кінець: вгору
+                    to: '0 1.2 0.1', // Вгору, але позаду фото
                     dur: 700,
                     easing: 'easeOutCubic',
                     delay: 200
@@ -326,7 +326,7 @@
                     videoElement.onended = () => {
                         arVideoEl.setAttribute('animation__disappear', {
                             property: 'position',
-                            to: '0 -0.5 0.05', // Повертається під фото
+                            to: '0 -0.5 0.1',
                             dur: 500,
                             easing: 'easeInQuad'
                         });
@@ -337,13 +337,13 @@
                 }
             });
 
-            // ✅ ГАЛЕРЕЯ: Висувається з-під фото вниз
+            // ✅ ГАЛЕРЕЯ: Висувається з-під фото вниз, ПОЗАДУ фото (Z=0.1)
             galleryBtn.addEventListener('click', () => {
                 galleryPlaneEl.setAttribute('visible', true);
-                galleryPlaneEl.setAttribute('position', '0 -0.5 0.05'); // Початок: під фото
+                galleryPlaneEl.setAttribute('position', '0 -0.5 0.1');
                 galleryPlaneEl.setAttribute('animation__appear', {
                     property: 'position',
-                    to: '0 -0.8 0.05', // Кінець: трохи нижче
+                    to: '0 -0.8 0.1', // Вниз, але позаду фото
                     dur: 600,
                     easing: 'easeOutCubic',
                     delay: 200
@@ -353,7 +353,7 @@
             galleryPlaneEl.addEventListener('click', () => {
                 galleryPlaneEl.setAttribute('animation__return', {
                     property: 'position',
-                    to: '0 -0.5 0.05', // Повертається під фото
+                    to: '0 -0.5 0.1',
                     dur: 400,
                     easing: 'easeInQuad'
                 });
