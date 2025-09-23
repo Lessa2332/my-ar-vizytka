@@ -66,26 +66,33 @@
         }
 
         /* Стиль для галереї */
-        #gallery-ui {
-            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-            z-index: 10002; background: rgba(0, 0, 0, 0.7); padding: 15px; border-radius: 12px;
-            display: none; color: white; text-align: center; font-family: 'Comic Neue', sans-serif;
-            max-width: 80%; pointer-events: auto;
-        }
-        #gallery-ui .counter {
-            font-size: 1.2em; margin-bottom: 10px;
-        }
-        #gallery-ui .nav {
-            display: flex; justify-content: center; gap: 15px; margin-top: 10px;
-        }
-        #gallery-ui button {
-            background: rgba(255, 255, 255, 0.2); color: white; border: none;
-            border-radius: 50%; width: 40px; height: 40px; font-size: 1.3em; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        #gallery-ui .close-btn {
-            position: absolute; top: 5px; right: 10px; padding: 3px 8px; font-size: 0.9em;
-        }
+  #gallery-ui {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    z-index: 10002; background: rgba(0, 0, 0, 0.7); padding: 15px; border-radius: 12px;
+    display: none; color: white; text-align: center; font-family: 'Comic Neue', sans-serif;
+    max-width: 90%; /* Розширено до 90% */
+    min-width: 300px; /* Мінімальна ширина */
+    min-height: 350px; /* Видовжено до 350px */
+    pointer-events: auto;
+}
+#gallery-ui .counter {
+    font-size: 1.2em; margin-bottom: 10px;
+}
+#gallery-ui .nav {
+    display: flex; justify-content: center; gap: 15px; margin-top: 10px;
+}
+#gallery-ui button {
+    background: rgba(255, 255, 255, 0.2); color: white; border: none;
+    border-radius: 50%; width: 40px; height: 40px; font-size: 1.3em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+#gallery-ui .close-btn {
+    position: absolute; top: 5px; right: 10px; padding: 3px 8px; font-size: 0.9em;
+}
+#gallery-img {
+    max-width: 100%; max-height: 80vh; /* Збільшено висоту з 60vh до 80vh */
+    border-radius: 8px; display: block; margin: 10px auto;
+}
     </style>
 </head>
 <body>
@@ -457,3 +464,4 @@
     </script>
 </body>
 </html>
+
