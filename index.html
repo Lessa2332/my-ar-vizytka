@@ -127,15 +127,15 @@
         <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
 
         <a-assets timeout="30000">
-            <img id="photo-texture" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg"> <!-- Додано для центрального фото -->
+            <img id="photo-texture" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg">
             <video id="lesa-video" src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" preload="auto" loop="false"></video>
             <img id="youtube-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/youtube.png">
             <img id="telegram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png">
             <img id="googlesites-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png">
             <img id="instagram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png">
-            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png"> <!-- ▶️ для відео -->
-            <img id="game-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png"> <!-- 🎮 для гри -->
-            <img id="gallery-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play2.png"> <!-- 🖼️ для галереї -->
+            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png">     <!-- ▶️ ВІДЕО -->
+            <img id="goy-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png">       <!-- 🎮 ГРА -->
+            <img id="play2-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play2.png">   <!-- 🖼️ ГАЛЕРЕЯ -->
             <!-- Фото для галереї -->
             <img id="photo1" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo1.jpg">
             <img id="photo2" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo2.jpg">
@@ -143,7 +143,7 @@
             <img id="photo4" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo4.jpg">
         </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera> <!-- Вимкнено look-controls для кращого raycasting -->
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
             <!-- Центральне фото -->
@@ -166,21 +166,21 @@
                 </a-animation>
             </a-entity>
 
-            <!-- Верхній ряд кнопок -->
+            <!-- 🔼 Верхній ряд кнопок — ПІДНЯТО ВИЩЕ (y=0.45) -->
             <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.4 0.45 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Instagram — фото та сторіс про AR-проєкти"></a-plane>
             <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="-0.15 0.45 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="QuestARia – квести, що оживають у твоєму смартфоні!"></a-plane>
             <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.15 0.45 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="AR_HUB — простір інноваційного навчання та розваг!"></a-plane>
             <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.4 0.45 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="QuestARia – квести, що оживають у твоєму смартфоні!"></a-plane>
             
-            <!-- Нижній ряд кнопок -- з вищим z (position z=0.06 для "попереду") -->
-            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.6 -0.4 0.06" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
-            <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.06" rotation="0 0 0" material="src: #game-icon; transparent: true; opacity: 1;" aria-label="Розпочати освітню гру"></a-plane>
-            <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.06" rotation="0 0 0" material="src: #gallery-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею фото"></a-plane>
+            <!-- Нижній ряд кнопок — ЗБЛИЖЕНО ДО ФОТО, Z=0.12 (ближче до камери!) -->
+            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.6 -0.4 0.12" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
+            <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.12" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати освітню гру"></a-plane>
+            <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.12" rotation="0 0 0" material="src: #play2-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею фото"></a-plane>
 
             <!-- Підписи під кнопками -->
-            <a-text value="Відео" position="-0.6 -0.55 0.07" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
-            <a-text value="Гра" position="0 -0.55 0.07" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
-            <a-text value="Галерея" position="0.6 -0.55 0.07" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
+            <a-text value="Відео" position="-0.6 -0.55 0.13" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
+            <a-text value="Гра" position="0 -0.55 0.13" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
+            <a-text value="Галерея" position="0.6 -0.55 0.13" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
 
             <!-- Відео -->
             <a-video 
@@ -189,7 +189,8 @@
                 position="0 -0.5 0.1" 
                 width="1.6" 
                 height="0.9" 
-                visible="false">
+                visible="false"
+                autoplay>
             </a-video>
 
             <!-- Галерея фото -->
@@ -197,7 +198,7 @@
                 id="gallery-plane" 
                 width="1.6" 
                 height="0.9" 
-                position="0 -0.5 0.1" 
+                position="0 -0.5 0.1" <!-- z=0.1 — далі від камери, ніж кнопки (z=0.12) -->
                 material="color: #222; opacity: 0.9" 
                 visible="false">
                 <a-text value="Натисніть, щоб переглянути" position="0 0 0.11" color="#FFF" align="center" width="3" scale="0.8 0.8 0.8"></a-text>
@@ -234,7 +235,7 @@
             if (!galleryPlaneEl) console.error('❗ Площина галереї не знайдена!');
 
             let isQuizActive = false;
-            let isVideoPlaying = false; // Додано для перевірки дубль-кліків
+            let isVideoPlaying = false;
             let currentQuestionIndex = 0;
             let currentPhotoIndex = 0;
             const totalPhotos = 4;
@@ -254,11 +255,11 @@
                 alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення.');
             });
 
-            // Логіка вікторини (без змін, але скидаємо індекс при закритті)
+            // Логіка вікторини
             function startQuiz() {
-                if (isQuizActive) return; // Запобігаємо дублю
+                if (isQuizActive) return;
                 isQuizActive = true;
-                currentQuestionIndex = 0; // Скидаємо при новому запуску
+                currentQuestionIndex = 0;
                 quizContainer.style.display = 'block';
                 showQuestion();
             }
@@ -323,7 +324,7 @@
                 currentQuestionIndex = 0;
             });
 
-            // Лінки (без змін)
+            // Лінки — без зайвих пробілів
             const links = {
                 'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
                 'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
@@ -336,7 +337,7 @@
                 if (btn) btn.addEventListener('click', () => window.open(links[id], '_blank', 'noopener,noreferrer'));
             });
 
-            // ✅ ВІДЕО: З перевіркою дубля
+            // ✅ ВІДЕО: Захист від дубля
             if (playVideoBtn) {
                 playVideoBtn.addEventListener('click', () => {
                     if (isVideoPlaying) return;
@@ -446,7 +447,7 @@
                 }
             }, 4000);
 
-            // ✅ Покращений Raycaster для тапів/кліків
+            // ✅ Покращений Raycaster — з логуванням ID
             sceneEl.addEventListener('loaded', () => {
                 const canvas = sceneEl.canvas;
 
@@ -462,7 +463,7 @@
 
                 function handleClick(x, y, eventType = 'click') {
                     const raycaster = getMouseRay(x, y);
-                    // Шукаємо конкретно кнопки + gallery-plane
+                    // Шукаємо лише видимі елементи
                     const targetElements = [playVideoBtn, gameBtn, galleryBtn, galleryPlaneEl].filter(el => el && el.getAttribute('visible') !== 'false');
                     const intersections = [];
 
@@ -480,7 +481,14 @@
                         intersections.sort((a, b) => a.distance - b.distance);
                         const closestEl = intersections[0].el;
                         console.log(`🎯 Клік на ${closestEl.id} (відстань: ${intersections[0].distance.toFixed(2)})`);
-                        closestEl.emit(eventType); // Еміт 'click'
+                        
+                        // Захист: якщо galleryPlaneEl прихований — ігноруємо
+                        if (closestEl.id === 'gallery-plane' && !galleryPlaneEl.getAttribute('visible')) {
+                            console.log('❌ Gallery plane прихована — ігноруємо клік');
+                            return;
+                        }
+                        
+                        closestEl.emit(eventType);
                     } else {
                         console.log('❌ Клік не перехоплено — жоден елемент не знайдено');
                     }
@@ -496,9 +504,8 @@
                     }
                 }, { passive: false });
 
-                // Десктоп: click + mouseup (fallback)
+                // Десктоп: click
                 canvas.addEventListener('click', e => handleClick(e.clientX, e.clientY));
-                canvas.addEventListener('mouseup', e => handleClick(e.clientX, e.clientY, 'mouseup')); // Додатковий для стабільності
             });
         });
     </script>
