@@ -133,9 +133,9 @@
             <img id="telegram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/telegram.png">
             <img id="googlesites-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png">
             <img id="instagram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png">
-            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png"> <!-- ▶️ для відео -->
-            <img id="game-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/game.png"> <!-- 🎮 для гри (заміни на свою!) -->
-            <img id="gallery-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/gallery.png"> <!-- 🖼️ для галереї (заміни на свою!) -->
+            <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png">     <!-- ▶️ ВІДЕО -->
+            <img id="goy-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png">       <!-- 🎮 ГРА -->
+            <img id="play2-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play2.png">   <!-- 🖼️ ГАЛЕРЕЯ -->
             <!-- Фото для галереї -->
             <img id="photo1" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo1.jpg">
             <img id="photo2" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo2.jpg">
@@ -166,7 +166,7 @@
                 </a-animation>
             </a-entity>
 
-            <!-- 🔼 Верхній ряд кнопок — ПІДНЯТО ВИЩЕ (y=0.45 замість 0.3) -->
+            <!-- 🔼 Верхній ряд кнопок — ПІДНЯТО ВИЩЕ (y=0.45) -->
             <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.4 0.45 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Instagram — фото та сторіс про AR-проєкти"></a-plane>
             <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="-0.15 0.45 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="QuestARia – квести, що оживають у твоєму смартфоні!"></a-plane>
             <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.15 0.45 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="AR_HUB — простір інноваційного навчання та розваг!"></a-plane>
@@ -174,10 +174,10 @@
             
             <!-- Нижній ряд кнопок -->
             <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.6 -0.4 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
-            <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #game-icon; transparent: true; opacity: 1;" aria-label="Розпочати освітню гру"></a-plane>
-            <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.05" rotation="0 0 0" material="src: #gallery-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею фото"></a-plane>
+            <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати освітню гру"></a-plane>
+            <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.05" rotation="0 0 0" material="src: #play2-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею фото"></a-plane>
 
-            <!-- Підписи під кнопками (додано для ясності) -->
+            <!-- Підписи під кнопками -->
             <a-text value="Відео" position="-0.6 -0.55 0.06" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
             <a-text value="Гра" position="0 -0.55 0.06" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
             <a-text value="Галерея" position="0.6 -0.55 0.06" color="#FFF" align="center" scale="0.5 0.5 0.5"></a-text>
