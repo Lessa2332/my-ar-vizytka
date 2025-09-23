@@ -201,267 +201,276 @@
         </a-entity>
     </a-scene>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const loader = document.getElementById('loader');
-            const sceneEl = document.querySelector('a-scene');
-            const targetEntity = document.querySelector('[mindar-image-target]');
-            const arVideoEl = document.getElementById('ar-video');
-            const playVideoBtn = document.getElementById('play-video-btn');
-            const gameBtn = document.getElementById('game-btn');
-            const galleryBtn = document.getElementById('gallery-btn');
-            const quizContainer = document.getElementById('quiz-container');
-            const quizQuestionEl = document.getElementById('quiz-question');
-            const quizOptionsEl = document.getElementById('quiz-options');
-            const quizResultEl = document.getElementById('quiz-result');
-            const closeQuizBtn = document.getElementById('close-quiz');
-            const galleryUI = document.getElementById('gallery-ui');
-            const galleryImg = document.getElementById('gallery-img');
-            const galleryCounter = document.getElementById('gallery-counter');
-            const galleryPrev = document.getElementById('gallery-prev');
-            const galleryNext = document.getElementById('gallery-next');
-            const closeGalleryUI = document.getElementById('close-gallery-ui');
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const loader = document.getElementById('loader');
+        const sceneEl = document.querySelector('a-scene');
+        const targetEntity = document.querySelector('[mindar-image-target]');
+        const arVideoEl = document.getElementById('ar-video');
+        const playVideoBtn = document.getElementById('play-video-btn');
+        const gameBtn = document.getElementById('game-btn');
+        const galleryBtn = document.getElementById('gallery-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const quizQuestionEl = document.getElementById('quiz-question');
+        const quizOptionsEl = document.getElementById('quiz-options');
+        const quizResultEl = document.getElementById('quiz-result');
+        const closeQuizBtn = document.getElementById('close-quiz');
+        const galleryUI = document.getElementById('gallery-ui');
+        const galleryImg = document.getElementById('gallery-img');
+        const galleryCounter = document.getElementById('gallery-counter');
+        const galleryPrev = document.getElementById('gallery-prev');
+        const galleryNext = document.getElementById('gallery-next');
+        const closeGalleryUI = document.getElementById('close-gallery-ui');
+        const instagramBtn = document.getElementById('instagram-btn');
+        const youtubeBtn = document.getElementById('youtube-btn');
+        const telegramBtn = document.getElementById('telegram-btn');
+        const googleBtn = document.getElementById('google-btn');
 
-            // 🔍 Перевірка елементів
-            if (!playVideoBtn) console.error('❗ Кнопка відео не знайдена!');
-            if (!gameBtn) console.error('❗ Кнопка гри не знайдена!');
-            if (!galleryBtn) console.error('❗ Кнопка галереї не знайдена!');
+        // 🔍 Перевірка елементів
+        if (!playVideoBtn) console.error('❗ Кнопка відео не знайдена!');
+        if (!gameBtn) console.error('❗ Кнопка гри не знайдена!');
+        if (!galleryBtn) console.error('❗ Кнопка галереї не знайдена!');
+        if (!instagramBtn) console.error('❗ Кнопка Instagram не знайдена!');
+        if (!youtubeBtn) console.error('❗ Кнопка YouTube не знайдена!');
+        if (!telegramBtn) console.error('❗ Кнопка Telegram не знайдена!');
+        if (!googleBtn) console.error('❗ Кнопка Google не знайдена!');
 
-            let isQuizActive = false;
-            let isVideoPlaying = false;
-            let currentQuestionIndex = 0;
-            let currentPhotoIndex = 0;
-            const totalPhotos = 4;
-            const photoIds = ['photo1', 'photo2', 'photo3', 'photo4'];
+        let isQuizActive = false;
+        let isVideoPlaying = false;
+        let currentQuestionIndex = 0;
+        let currentPhotoIndex = 0;
+        const totalPhotos = 4;
+        const photoIds = ['photo1', 'photo2', 'photo3', 'photo4'];
 
-            const quizData = [
-                { question: "Яке місто є столицею України?", options: ["Львів", "Одеса", "Київ", "Харків"], answer: "Київ" },
-                { question: "Як називається головна річка України?", options: ["Дністер", "Дніпро", "Десна", "Дунай"], answer: "Дніпро" },
-                { question: "Найвища гора України — це?", options: ["Петрос", "Говерла", "Піп Іван"], answer: "Говерла" },
-                { question: "Скільки адміністративних областей має Україна?", options: ["22", "24", "25"], answer: "24" },
-                { question: "Скільки морів омиває Україну?", options: ["Одне", "Два", "Три"], answer: "Два" }
-            ];
+        const quizData = [
+            { question: "Яке місто є столицею України?", options: ["Львів", "Одеса", "Київ", "Харків"], answer: "Київ" },
+            { question: "Як називається головна річка України?", options: ["Дністер", "Дніпро", "Десна", "Дунай"], answer: "Дніпро" },
+            { question: "Найвища гора України — це?", options: ["Петрос", "Говерла", "Піп Іван"], answer: "Говерла" },
+            { question: "Скільки адміністративних областей має Україна?", options: ["22", "24", "25"], answer: "24" },
+            { question: "Скільки морів омиває Україну?", options: ["Одне", "Два", "Три"], answer: "Два" }
+        ];
 
-            // Обробка помилок MindAR
-            sceneEl.addEventListener('arError', (err) => {
-                console.error('Помилка MindAR:', err);
-                alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення.');
-            });
-
-            function startQuiz() {
-                if (isQuizActive) return;
-                isQuizActive = true;
-                currentQuestionIndex = 0;
-                quizContainer.style.display = 'block';
-                showQuestion();
-            }
-
-            function showQuestion() {
-                const currentQuestion = quizData[currentQuestionIndex];
-                quizQuestionEl.textContent = currentQuestion.question;
-                quizOptionsEl.innerHTML = '';
-                quizResultEl.textContent = '';
-                currentQuestion.options.forEach(option => {
-                    const button = document.createElement('button');
-                    button.textContent = option;
-                    button.setAttribute('aria-label', `Варіант: ${option}`);
-                    button.addEventListener('click', () => checkAnswer(option));
-                    quizOptionsEl.appendChild(button);
-                });
-            }
-
-            function checkAnswer(selectedOption) {
-                const currentQuestion = quizData[currentQuestionIndex];
-                const isCorrect = selectedOption === currentQuestion.answer;
-                
-                Array.from(quizOptionsEl.children).forEach(button => {
-                    button.disabled = true;
-                    if (button.textContent === currentQuestion.answer) {
-                        button.classList.add('correct');
-                    } else if (button.textContent === selectedOption) {
-                        button.classList.add('incorrect');
-                    }
-                });
-
-                if (isCorrect) {
-                    quizResultEl.textContent = 'Правильно! ✅';
-                    setTimeout(() => {
-                        currentQuestionIndex++;
-                        if (currentQuestionIndex < quizData.length) {
-                            showQuestion();
-                        } else {
-                            quizResultEl.textContent = 'Вікторина завершена! Молодець! 🏆';
-                            setTimeout(() => {
-                                quizContainer.style.display = 'none';
-                                isQuizActive = false;
-                                currentQuestionIndex = 0;
-                            }, 2000);
-                        }
-                    }, 1500);
-                } else {
-                    quizResultEl.textContent = 'Неправильно. Спробуй ще раз. ❌';
-                    setTimeout(() => {
-                        quizResultEl.textContent = '';
-                        Array.from(quizOptionsEl.children).forEach(button => {
-                            button.disabled = false;
-                            button.classList.remove('correct', 'incorrect');
-                        });
-                    }, 1500);
-                }
-            }
-
-            closeQuizBtn.addEventListener('click', () => {
-                quizContainer.style.display = 'none';
-                isQuizActive = false;
-                currentQuestionIndex = 0;
-            });
-
-            const links = {
-                'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
-                'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
-                'google-btn': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
-                'instagram-btn': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85'
-            };
-
-            Object.keys(links).forEach(id => {
-                const btn = document.getElementById(id);
-                if (btn) btn.addEventListener('click', () => window.open(links[id], '_blank', 'noopener,noreferrer'));
-            });
-
-            if (playVideoBtn) {
-                playVideoBtn.addEventListener('click', () => {
-                    if (isVideoPlaying) return;
-                    console.log("🎬 Клік по кнопці ВІДЕО");
-                    isVideoPlaying = true;
-                    arVideoEl.setAttribute('visible', true);
-                    arVideoEl.setAttribute('position', '0 -0.5 0.1');
-                    arVideoEl.setAttribute('animation__appear', {
-                        property: 'position',
-                        to: '0 1.2 0.1',
-                        dur: 700,
-                        easing: 'easeOutCubic',
-                        delay: 200
-                    });
-                    const videoElement = arVideoEl.components.material.material.map.image;
-                    if (videoElement && typeof videoElement.play === 'function') {
-                        setTimeout(() => {
-                            videoElement.play().catch(err => console.error('Помилка відео:', err));
-                        }, 200);
-                        videoElement.onended = () => {
-                            arVideoEl.setAttribute('animation__disappear', {
-                                property: 'position',
-                                to: '0 -0.5 0.1',
-                                dur: 500,
-                                easing: 'easeInQuad'
-                            });
-                            setTimeout(() => {
-                                arVideoEl.setAttribute('visible', false);
-                                isVideoPlaying = false;
-                            }, 500);
-                        };
-                    } else {
-                        isVideoPlaying = false;
-                    }
-                });
-            }
-
-            if (gameBtn) {
-                gameBtn.addEventListener('click', () => {
-                    console.log("🎮 Клік по кнопці ГРА");
-                    startQuiz();
-                });
-            }
-
-            if (galleryBtn) {
-                galleryBtn.addEventListener('click', () => {
-                    console.log("🖼️ Клік по кнопці ГАЛЕРЕЯ");
-                    showGalleryPhoto(0);
-                    galleryUI.style.display = 'block';
-                });
-            }
-
-            function showGalleryPhoto(index) {
-                currentPhotoIndex = index;
-                const imgElement = document.getElementById(photoIds[index]);
-                if (!imgElement) {
-                    console.error(`Зображення ${photoIds[index]} не знайдено!`);
-                    return;
-                }
-                galleryImg.src = imgElement.src;
-                galleryCounter.textContent = `Фото ${index + 1} з ${totalPhotos}`;
-            }
-
-            if (galleryPrev) galleryPrev.addEventListener('click', () => { if (currentPhotoIndex > 0) showGalleryPhoto(currentPhotoIndex - 1); });
-            if (galleryNext) galleryNext.addEventListener('click', () => { if (currentPhotoIndex < totalPhotos - 1) showGalleryPhoto(currentPhotoIndex + 1); });
-            if (closeGalleryUI) closeGalleryUI.addEventListener('click', () => { galleryUI.style.display = 'none'; });
-
-            let hasTargetBeenFound = false;
-            if (targetEntity) {
-                targetEntity.addEventListener('targetFound', () => {
-                    console.log("🎯 Маркер знайдено!");
-                    hasTargetBeenFound = true;
-                    loader.style.display = 'none';
-                });
-            }
-            setTimeout(() => {
-                if (loader.style.display !== 'none') {
-                    console.log('ℹ️ Лоадер приховано примусово.');
-                    loader.style.display = 'none';
-                }
-            }, 4000);
-
-            sceneEl.addEventListener('loaded', () => {
-                const canvas = sceneEl.canvas;
-
-                function getMouseRay(x, y) {
-                    const mouse = new THREE.Vector2();
-                    mouse.x = (x / window.innerWidth) * 2 - 1;
-                    mouse.y = -(y / window.innerHeight) * 2 + 1;
-                    const camera = sceneEl.camera;
-                    const raycaster = new THREE.Raycaster();
-                    raycaster.setFromCamera(mouse, camera);
-                    return raycaster;
-                }
-
-                function handleClick(x, y, eventType = 'click') {
-                    const raycaster = getMouseRay(x, y);
-                    const targetElements = [playVideoBtn, gameBtn, galleryBtn].filter(el => el && el.getAttribute('visible') !== 'false');
-                    const intersections = [];
-
-                    targetElements.forEach(el => {
-                        const mesh = el.getObject3D('mesh');
-                        if (mesh) {
-                            const intersects = raycaster.intersectObject(mesh, true);
-                            if (intersects.length > 0) {
-                                intersections.push({ el, distance: intersects[0].distance, id: el.id });
-                            }
-                        }
-                    });
-
-                    if (intersections.length > 0) {
-                        intersections.sort((a, b) => a.distance - b.distance);
-                        const closestEl = intersections[0].el;
-                        console.log(`🎯 Клік на ${closestEl.id} (відстань: ${intersections[0].distance.toFixed(2)})`);
-                        closestEl.emit(eventType);
-                    } else {
-                        console.log('❌ Клік не перехоплено — жоден елемент не знайдено');
-                    }
-                }
-
-                canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
-                canvas.addEventListener('touchend', e => {
-                    e.preventDefault();
-                    if (e.changedTouches.length > 0) {
-                        const touch = e.changedTouches[0];
-                        handleClick(touch.clientX, touch.clientY);
-                    }
-                }, { passive: false });
-
-                canvas.addEventListener('click', e => handleClick(e.clientX, e.clientY));
-                canvas.addEventListener('mouseup', e => handleClick(e.clientX, e.clientY, 'mouseup'));
-            });
+        // Обробка помилок MindAR
+        sceneEl.addEventListener('arError', (err) => {
+            console.error('Помилка MindAR:', err);
+            alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення.');
         });
-    </script>
+
+        function startQuiz() {
+            if (isQuizActive) return;
+            isQuizActive = true;
+            currentQuestionIndex = 0;
+            quizContainer.style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            quizQuestionEl.textContent = currentQuestion.question;
+            quizOptionsEl.innerHTML = '';
+            quizResultEl.textContent = '';
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.setAttribute('aria-label', `Варіант: ${option}`);
+                button.addEventListener('click', () => checkAnswer(option));
+                quizOptionsEl.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedOption === currentQuestion.answer;
+            
+            Array.from(quizOptionsEl.children).forEach(button => {
+                button.disabled = true;
+                if (button.textContent === currentQuestion.answer) {
+                    button.classList.add('correct');
+                } else if (button.textContent === selectedOption) {
+                    button.classList.add('incorrect');
+                }
+            });
+
+            if (isCorrect) {
+                quizResultEl.textContent = 'Правильно! ✅';
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < quizData.length) {
+                        showQuestion();
+                    } else {
+                        quizResultEl.textContent = 'Вікторина завершена! Молодець! 🏆';
+                        setTimeout(() => {
+                            quizContainer.style.display = 'none';
+                            isQuizActive = false;
+                            currentQuestionIndex = 0;
+                        }, 2000);
+                    }
+                }, 1500);
+            } else {
+                quizResultEl.textContent = 'Неправильно. Спробуй ще раз. ❌';
+                setTimeout(() => {
+                    quizResultEl.textContent = '';
+                    Array.from(quizOptionsEl.children).forEach(button => {
+                        button.disabled = false;
+                        button.classList.remove('correct', 'incorrect');
+                    });
+                }, 1500);
+            }
+        }
+
+        closeQuizBtn.addEventListener('click', () => {
+            quizContainer.style.display = 'none';
+            isQuizActive = false;
+            currentQuestionIndex = 0;
+        });
+
+        const links = {
+            'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
+            'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
+            'google-btn': 'https://sites.google.com/view/questaria/%D0%B3%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0',
+            'instagram-btn': 'https://www.instagram.com/smart23lessa?igsh=aHN5dzZudnJneW85'
+        };
+
+        Object.keys(links).forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.addEventListener('click', () => window.open(links[id], '_blank', 'noopener,noreferrer'));
+        });
+
+        if (playVideoBtn) {
+            playVideoBtn.addEventListener('click', () => {
+                if (isVideoPlaying) return;
+                console.log("🎬 Клік по кнопці ВІДЕО");
+                isVideoPlaying = true;
+                arVideoEl.setAttribute('visible', true);
+                arVideoEl.setAttribute('position', '0 -0.5 0.1');
+                arVideoEl.setAttribute('animation__appear', {
+                    property: 'position',
+                    to: '0 1.2 0.1',
+                    dur: 700,
+                    easing: 'easeOutCubic',
+                    delay: 200
+                });
+                const videoElement = arVideoEl.components.material.material.map.image;
+                if (videoElement && typeof videoElement.play === 'function') {
+                    setTimeout(() => {
+                        videoElement.play().catch(err => console.error('Помилка відео:', err));
+                    }, 200);
+                    videoElement.onended = () => {
+                        arVideoEl.setAttribute('animation__disappear', {
+                            property: 'position',
+                            to: '0 -0.5 0.1',
+                            dur: 500,
+                            easing: 'easeInQuad'
+                        });
+                        setTimeout(() => {
+                            arVideoEl.setAttribute('visible', false);
+                            isVideoPlaying = false;
+                        }, 500);
+                    };
+                } else {
+                    isVideoPlaying = false;
+                }
+            });
+        }
+
+        if (gameBtn) {
+            gameBtn.addEventListener('click', () => {
+                console.log("🎮 Клік по кнопці ГРА");
+                startQuiz();
+            });
+        }
+
+        if (galleryBtn) {
+            galleryBtn.addEventListener('click', () => {
+                console.log("🖼️ Клік по кнопці ГАЛЕРЕЯ");
+                showGalleryPhoto(0);
+                galleryUI.style.display = 'block';
+            });
+        }
+
+        function showGalleryPhoto(index) {
+            currentPhotoIndex = index;
+            const imgElement = document.getElementById(photoIds[index]);
+            if (!imgElement) {
+                console.error(`Зображення ${photoIds[index]} не знайдено!`);
+                return;
+            }
+            galleryImg.src = imgElement.src;
+            galleryCounter.textContent = `Фото ${index + 1} з ${totalPhotos}`;
+        }
+
+        if (galleryPrev) galleryPrev.addEventListener('click', () => { if (currentPhotoIndex > 0) showGalleryPhoto(currentPhotoIndex - 1); });
+        if (galleryNext) galleryNext.addEventListener('click', () => { if (currentPhotoIndex < totalPhotos - 1) showGalleryPhoto(currentPhotoIndex + 1); });
+        if (closeGalleryUI) closeGalleryUI.addEventListener('click', () => { galleryUI.style.display = 'none'; });
+
+        let hasTargetBeenFound = false;
+        if (targetEntity) {
+            targetEntity.addEventListener('targetFound', () => {
+                console.log("🎯 Маркер знайдено!");
+                hasTargetBeenFound = true;
+                loader.style.display = 'none';
+            });
+        }
+        setTimeout(() => {
+            if (loader.style.display !== 'none') {
+                console.log('ℹ️ Лоадер приховано примусово.');
+                loader.style.display = 'none';
+            }
+        }, 4000);
+
+        sceneEl.addEventListener('loaded', () => {
+            const canvas = sceneEl.canvas;
+
+            function getMouseRay(x, y) {
+                const mouse = new THREE.Vector2();
+                mouse.x = (x / window.innerWidth) * 2 - 1;
+                mouse.y = -(y / window.innerHeight) * 2 + 1;
+                const camera = sceneEl.camera;
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(mouse, camera);
+                return raycaster;
+            }
+
+            function handleClick(x, y, eventType = 'click') {
+                const raycaster = getMouseRay(x, y);
+                const targetElements = [playVideoBtn, gameBtn, galleryBtn, instagramBtn, youtubeBtn, telegramBtn, googleBtn].filter(el => el && el.getAttribute('visible') !== 'false');
+                const intersections = [];
+
+                targetElements.forEach(el => {
+                    const mesh = el.getObject3D('mesh');
+                    if (mesh) {
+                        const intersects = raycaster.intersectObject(mesh, true);
+                        if (intersects.length > 0) {
+                            intersections.push({ el, distance: intersects[0].distance, id: el.id });
+                        }
+                    }
+                });
+
+                if (intersections.length > 0) {
+                    intersections.sort((a, b) => a.distance - b.distance);
+                    const closestEl = intersections[0].el;
+                    console.log(`🎯 Клік на ${closestEl.id} (відстань: ${intersections[0].distance.toFixed(2)})`);
+                    closestEl.emit(eventType);
+                } else {
+                    console.log('❌ Клік не перехоплено — жоден елемент не знайдено');
+                }
+            }
+
+            canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+            canvas.addEventListener('touchend', e => {
+                e.preventDefault();
+                if (e.changedTouches.length > 0) {
+                    const touch = e.changedTouches[0];
+                    handleClick(touch.clientX, touch.clientY);
+                }
+            }, { passive: false });
+
+            canvas.addEventListener('click', e => handleClick(e.clientX, e.clientY));
+            canvas.addEventListener('mouseup', e => handleClick(e.clientX, e.clientY, 'mouseup'));
+        });
+    });
+</script>
 </body>
 </html>
+
 
