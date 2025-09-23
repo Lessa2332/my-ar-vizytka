@@ -13,7 +13,10 @@
 
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; touch-action: none; }
-        a-scene { width: 100% !important; height: 100% !important; position: fixed; top: 0; left: 0; }
+        a-scene {
+            width: 100% !important; height: 100% !important; position: fixed; top: 0; left: 0;
+            aspect-ratio: 16 / 9; max-width: 100vw; max-height: calc(100vw * 9 / 16); margin: auto;
+        }
         .arjs-loader {
             height: 100%; width: 100%; position: absolute; top: 0; left: 0;
             background: rgba(135, 206, 235, 0.9); z-index: 9999;
@@ -24,7 +27,7 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         .pulse { animation: pulse 1.5s infinite; }
 
-        /* Стилі для вікторини */
+        /* Стилі для вікторини та галереї */
         .quiz-container, .gallery-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             z-index: 10001; background: rgba(255, 255, 255, 0.95);
@@ -44,7 +47,7 @@
         .quiz-options button.incorrect { background-color: #f44336; color: white; border-color: #f44336; }
         .quiz-result { margin-top: 20px; font-size: 1.3em; font-weight: bold; }
 
-        /* Кнопка закриття — ВИПРАВЛЕНО: зменшено та зміщено */
+        /* Кнопка закриття */
         .close-btn {
             position: absolute; top: 5px; right: 10px; padding: 4px 8px;
             cursor: pointer; border: none; background: #f44336; color: white;
@@ -68,22 +71,14 @@
         /* Стиль для галереї */
         .gallery-image {
             max-width: 100%; height: auto; border-radius: 10px; margin: 10px 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: opacity 0.3s ease;
         }
         .gallery-nav button {
-            margin: 5px;
-            padding: 8px 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
+            margin: 5px; padding: 8px 16px; background: #4CAF50; color: white;
+            border: none; border-radius: 5px; cursor: pointer; font-size: 1em;
         }
         .gallery-counter {
-            font-size: 1.1em;
-            margin: 10px 0;
-            font-weight: bold;
+            font-size: 1.1em; margin: 10px 0; font-weight: bold;
         }
     </style>
 </head>
@@ -121,10 +116,6 @@
         renderer="colorManagement: true; physicallyCorrectLights: false;"
         id="scene"
     >
-        <!-- Освітлення для яскравості -->
-        <a-entity light="type: directional; color: #FFF; intensity: 2.0" position="0 1 1"></a-entity>
-        <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
-
         <a-assets timeout="30000">
             <img id="photo-texture" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo.jpg">
             <video id="lesa-video" src="https://lessa2332.github.io/my-ar-vizytka/assets/video/lesa.mp4" preload="auto" loop="false"></video>
@@ -133,36 +124,43 @@
             <img id="googlesites-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/googlesites.png">
             <img id="instagram-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/instagram.png">
             <img id="play-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play.png">
-            <img id="play2-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play2.png"> <!-- Нова іконка для галереї -->
+            <img id="play2-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/play2.png">
             <img id="goy-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png">
-            <!-- Завантажуємо фото для галереї -->
             <img id="photo1" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo1.jpg">
             <img id="photo2" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo2.jpg">
             <img id="photo3" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo3.jpg">
             <img id="photo4" src="https://lessa2332.github.io/my-ar-vizytka/assets/images/photo4.jpg">
         </a-assets>
 
-        <!-- Камера без look-controls -->
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <!-- Камера з підтримкою кліків -->
+        <a-camera
+            position="0 0 0"
+            look-controls="enabled: false"
+            cursor="rayOrigin: mouse; fuse: false"
+            raycaster="objects: .clickable; far: 10; interval: 100">
+        </a-camera>
+
+        <!-- Освітлення для яскравості -->
+        <a-light type="ambient" intensity="0.8" color="#FFFFFF"></a-light>
+        <a-light type="directional" intensity="1.5" color="#FFFFFF" position="0 1 1"></a-light>
 
         <a-entity mindar-image-target="targetIndex: 0">
-            <!-- Фото (широке, під 16:9) -->
-            <a-image src="#photo-texture" position="0 0 -0.1" height="0.75" width="1.0" rotation="0 0 0"></a-image>
+            <!-- Фото (16:9) -->
+            <a-image src="#photo-texture" position="0 0 -0.1" height="0.5625" width="1.0" rotation="0 0 0" material="emissive: #ffffff; emissiveIntensity: 0.3"></a-image>
             
-            <!-- Кнопки зверху (горизонтальний ряд) — БЕЗ КНОПКИ ГРИ! -->
-            <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.6 0.4 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Відкрити Instagram"></a-plane>
-            <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="-0.3 0.4 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="Відкрити YouTube канал"></a-plane>
-            <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.0 0.4 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="Приєднатися до Telegram"></a-plane>
-            <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.3 0.4 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="Відвідати Google Sites"></a-plane>
-            <!-- ❌ ВИДАЛЕНО: <a-plane id="quiz-btn" ...> зверху -->
+            <!-- Кнопки зверху (горизонтальний ряд) -->
+            <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.084375" position="-0.45 0.35 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; emissive: #ffffff; emissiveIntensity: 0.4" aria-label="Відкрити YouTube канал" event-set__mouseenter="_event: mouseenter; scale: 1.1 1.1 1.1" event-set__mouseleave="_event: mouseleave; scale: 1 1 1"></a-plane>
+            <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.084375" position="-0.15 0.35 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; emissive: #ffffff; emissiveIntensity: 0.4" aria-label="Приєднатися до Telegram" event-set__mouseenter="_event: mouseenter; scale: 1.1 1.1 1.1" event-set__mouseleave="_event: mouseleave; scale: 1 1 1"></a-plane>
+            <a-plane id="google-btn" class="clickable" width="0.15" height="0.084375" position="0.15 0.35 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; emissive: #ffffff; emissiveIntensity: 0.4" aria-label="Відвідати Google Sites" event-set__mouseenter="_event: mouseenter; scale: 1.1 1.1 1.1" event-set__mouseleave="_event: mouseleave; scale: 1 1 1"></a-plane>
+            <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.084375" position="0.45 0.35 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; emissive: #ffffff; emissiveIntensity: 0.4" aria-label="Відкрити Instagram" event-set__mouseenter="_event: mouseenter; scale: 1.1 1.1 1.1" event-set__mouseleave="_event: mouseleave; scale: 1 1 1"></a-plane>
             
             <!-- Кнопки внизу -->
-            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.6 -0.4 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
-            <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати гру"></a-plane>
-            <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.05" rotation="0 0 0" material="src: #play2-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею"></a-plane>
+            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.084375" position="-0.3 -0.35 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; emissive: #ffffff; emissiveIntensity: 0.4" aria-label="Відтворити відео" event-set__mouseenter="_event: mouseenter; scale: 1.1 1.1 1.1" event-set__mouseleave="_event: mouseleave; scale: 1 1 1"></a-plane>
+            <a-plane id="quiz-btn" class="clickable" width="0.15" height="0.084375" position="0 -0.35 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; emissive: #ffffff; emissiveIntensity: 0.4" aria-label="Розпочати вікторину" event-set__mouseenter="_event: mouseenter; scale: 1.1 1.1 1.1" event-set__mouseleave="_event: mouseleave; scale: 1 1 1"></a-plane>
+            <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.084375" position="0.3 -0.35 0.05" rotation="0 0 0" material="src: #play2-icon; transparent: true; emissive: #ffffff; emissiveIntensity: 0.4" aria-label="Переглянути галерею" event-set__mouseenter="_event: mouseenter; scale: 1.1 1.1 1.1" event-set__mouseleave="_event: mouseleave; scale: 1 1 1"></a-plane>
             
-            <!-- Відео вище -->
-            <a-video id="ar-video" src="#lesa-video" position="0 0.8 0.05" width="1.6" height="0.9" visible="false" autoplay></a-video>
+            <!-- Відео (16:9) -->
+            <a-video id="ar-video" src="#lesa-video" position="0 0.2 0.05" width="1.2" height="0.675" visible="false" material="emissive: #ffffff; emissiveIntensity: 0.3"></a-video>
         </a-entity>
     </a-scene>
 
@@ -173,8 +171,8 @@
             const targetEntity = document.querySelector('[mindar-image-target]');
             const arVideoEl = document.getElementById('ar-video');
             const playVideoBtn = document.getElementById('play-video-btn');
-            const gameBtn = document.getElementById('game-btn');
-            const galleryBtn = document.getElementById('gallery-btn'); // Кнопка галереї
+            const quizBtn = document.getElementById('quiz-btn');
+            const galleryBtn = document.getElementById('gallery-btn');
             const quizContainer = document.getElementById('quiz-container');
             const quizQuestionEl = document.getElementById('quiz-question');
             const quizOptionsEl = document.getElementById('quiz-options');
@@ -224,7 +222,7 @@
             // Обробка помилок MindAR
             sceneEl.addEventListener('arError', (err) => {
                 console.error('Помилка MindAR:', err);
-                alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення.');
+                alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення. / Failed to initialize AR. Check the marker or connection.');
             });
 
             // Обробка завантаження активів
@@ -233,7 +231,7 @@
             });
             document.querySelector('a-assets').addEventListener('error', (err) => {
                 console.error('Помилка завантаження активів:', err);
-                alert('Не вдалося завантажити деякі ресурси. Перевірте підключення або файли.');
+                alert('Не вдалося завантажити деякі ресурси. Перевірте підключення або файли. / Failed to load some resources. Check connection or files.');
             });
 
             // Логіка вікторини
@@ -315,29 +313,32 @@
             Object.keys(links).forEach(id => {
                 const el = document.getElementById(id);
                 el.addEventListener('click', () => {
+                    console.log(`Клік на ${id}`); // Дебаг
                     window.open(links[id], '_blank', 'noopener,noreferrer');
                 });
             });
 
             // Обробник для відео
             playVideoBtn.addEventListener('click', () => {
+                console.log('Клік на play-video-btn'); // Дебаг
                 if (arVideoEl) {
                     arVideoEl.setAttribute('visible', true);
                     const videoElement = arVideoEl.components.material.material.map.image;
                     if (videoElement && typeof videoElement.play === 'function') {
                         videoElement.play().catch(err => {
                             console.error('Помилка відтворення відео:', err);
-                            alert('Не вдалося відтворити відео.');
+                            alert('Не вдалося відтворити відео. Перевірте формат або підключення. / Failed to play video. Check format or connection.');
                         });
                     }
                 } else {
                     console.error('Відеоелемент не знайдено!');
-                    alert('Відео недоступне.');
+                    alert('Відео недоступне. Перевірте ресурси. / Video unavailable. Check resources.');
                 }
             });
 
-            // Запуск вікторини по кліку (на кнопці "Гра" внизу)
-            gameBtn.addEventListener('click', () => {
+            // Запуск вікторини
+            quizBtn.addEventListener('click', () => {
+                console.log('Клік на quiz-btn'); // Дебаг
                 if (!isQuizActive) {
                     startQuiz();
                 }
@@ -346,9 +347,13 @@
             // Логіка галереї
             function showPhoto(index) {
                 currentPhotoIndex = index;
-                const imgElement = document.getElementById(photoIds[index]);
-                galleryImageEl.src = imgElement.src;
-                galleryCounterEl.textContent = `Фото ${index + 1} з ${totalPhotos}`;
+                galleryImageEl.style.opacity = '0'; // Плавний перехід
+                setTimeout(() => {
+                    const imgElement = document.getElementById(photoIds[index]);
+                    galleryImageEl.src = imgElement.src;
+                    galleryCounterEl.textContent = `Фото ${index + 1} з ${totalPhotos}`;
+                    galleryImageEl.style.opacity = '1';
+                }, 300);
             }
 
             function nextPhoto() {
@@ -364,8 +369,9 @@
             }
 
             galleryBtn.addEventListener('click', () => {
+                console.log('Клік на gallery-btn'); // Дебаг
                 galleryContainer.style.display = 'block';
-                showPhoto(0); // Показуємо перше фото
+                showPhoto(0);
             });
 
             closeGalleryBtn.addEventListener('click', () => {
@@ -380,7 +386,6 @@
                 targetEntity.addEventListener('targetFound', () => {
                     console.log("🎯 Маркер знайдено!");
                     loader.style.display = 'none';
-                    
                     if (arVideoEl.getAttribute('visible')) {
                         const videoElement = arVideoEl.components.material.material.map.image;
                         if (videoElement && videoElement.paused) {
@@ -405,10 +410,10 @@
                 });
             } else {
                 console.error('Елемент mindar-image-target не знайдено!');
-                alert('Помилка ініціалізації AR.');
+                alert('Помилка ініціалізації AR. / AR initialization error.');
             }
 
-            // ✅ ГОЛОВНЕ ВИПРАВЛЕННЯ: Ручний Raycaster для мобільних тапів
+            // Ручний Raycaster для мобільних тапів
             sceneEl.addEventListener('loaded', () => {
                 const canvas = sceneEl.canvas;
 
@@ -445,6 +450,7 @@
                     if (intersections.length > 0) {
                         intersections.sort((a, b) => a.distance - b.distance);
                         const closest = intersections[0].el;
+                        console.log(`Raycaster: Клік на ${closest.id}`); // Дебаг
                         closest.emit('click');
                     }
                 }
