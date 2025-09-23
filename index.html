@@ -65,43 +65,27 @@
             opacity: 0.8;
         }
 
-        /* Велика галерея фото */
-        #gallery-frame {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10002; display: none; pointer-events: auto;
+        /* Стиль для галереї в 3D (не повноекранна!) */
+        #gallery-ui {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 10002; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 12px; 
+            display: none; color: white; text-align: center; font-family: 'Comic Neue', sans-serif;
+            max-width: 80%; pointer-events: auto;
         }
-        #gallery-frame > div {
-            position: relative; width: 100%; height: 100%;
+        #gallery-ui .counter {
+            font-size: 1.2em; margin-bottom: 10px;
         }
-        #gallery-frame .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+        #gallery-ui .nav {
+            display: flex; justify-content: center; gap: 15px; margin-top: 10px;
         }
-        #gallery-frame .close-btn-large {
-            position: absolute; top: 20px; right: 20px; z-index: 10; 
-            padding: 10px; background: #f44336; color: white; border: none; 
-            border-radius: 50%; font-size: 1.2em; cursor: pointer; 
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+        #gallery-ui button {
+            background: rgba(255,255,255,0.2); color: white; border: none; 
+            border-radius: 50%; width: 40px; height: 40px; font-size: 1.3em; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
-        #gallery-frame .counter {
-            position: absolute; top: 20px; left: 50%; transform: translateX(-50%); 
-            z-index: 10; color: white; font-size: 1.3em; font-weight: bold; 
-            background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px;
+        #gallery-ui .close-btn {
+            position: absolute; top: 5px; right: 10px; padding: 3px 8px; font-size: 0.9em;
         }
-        #gallery-frame .image-container {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            z-index: 5; max-width: 90%; max-height: 80%;
-        }
-        #gallery-frame .image-container img {
-            max-width: 100%; max-height: 80vh; height: auto; 
-            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block;
-        }
-        #gallery-frame .nav-btn {
-            position: absolute; top: 50%; transform: translateY(-50%); 
-            z-index: 10; padding: 15px; background: rgba(255,255,255,0.2); 
-            color: white; border: none; border-radius: 50%; font-size: 1.8em; 
-            cursor: pointer; width: 60px; height: 60px; backdrop-filter: blur(5px);
-        }
-        #gallery-frame .nav-btn.prev { left: 20px; }
-        #gallery-frame .nav-btn.next { right: 20px; }
     </style>
 </head>
 <body>
@@ -118,17 +102,14 @@
         <div class="quiz-result" id="quiz-result"></div>
     </div>
 
-    <!-- Велика галерея фото -->
-    <div id="gallery-frame">
-        <div>
-            <div class="overlay"></div>
-            <button class="close-btn-large" id="close-gallery-frame" aria-label="Закрити галерею">✖</button>
-            <div class="counter" id="gallery-counter">Фото 1 з 4</div>
-            <div class="image-container">
-                <img id="gallery-img" src="" alt="Галерея фото">
-            </div>
-            <button class="nav-btn prev" id="gallery-prev" aria-label="Попереднє фото">‹</button>
-            <button class="nav-btn next" id="gallery-next" aria-label="Наступне фото">›</button>
+    <!-- UI для галереї -->
+    <div id="gallery-ui">
+        <button class="close-btn" id="close-gallery-ui">✖</button>
+        <div class="counter" id="gallery-counter">Фото 1 з 4</div>
+        <img id="gallery-img" src="" alt="Галерея фото" style="max-width: 100%; max-height: 60vh; border-radius: 8px; display: block; margin: 10px auto;">
+        <div class="nav">
+            <button id="gallery-prev">◀</button>
+            <button id="gallery-next">▶</button>
         </div>
     </div>
 
@@ -179,26 +160,26 @@
             <a-plane id="game-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати освітню гру"></a-plane>
             <a-plane id="gallery-btn" class="clickable" width="0.15" height="0.15" position="0.6 -0.4 0.05" rotation="0 0 0" material="src: #play2-icon; transparent: true; opacity: 1;" aria-label="Переглянути галерею фото"></a-plane>
 
-            <!-- Відео (початкова позиція ЗЛІВА) -->
+            <!-- Відео — з’являється з-під фото -->
             <a-video 
                 id="ar-video" 
                 src="#lesa-video" 
-                position="-1.5 0.8 0.05" 
+                position="0 -0.5 0.05" 
                 width="1.6" 
                 height="0.9" 
                 visible="false"
                 autoplay>
             </a-video>
 
-            <!-- Плейсхолдер для галереї (початкова позиція ЗПРАВА) -->
+            <!-- Галерея фото — з’являється з-під фото -->
             <a-plane 
-                id="gallery-placeholder" 
+                id="gallery-plane" 
                 width="1.6" 
                 height="0.9" 
-                position="1.5 0.8 0.05" 
-                material="color: #333; opacity: 0.8" 
+                position="0 -0.5 0.05" 
+                material="color: #222; opacity: 0.9" 
                 visible="false">
-                <a-text value="Галерея фото" position="0 0 0.01" color="#FFF" align="center" width="3"></a-text>
+                <a-text value="Натисніть, щоб переглянути" position="0 0 0.01" color="#FFF" align="center" width="3" scale="0.8 0.8 0.8"></a-text>
             </a-plane>
         </a-entity>
     </a-scene>
@@ -209,7 +190,7 @@
             const sceneEl = document.querySelector('a-scene');
             const targetEntity = document.querySelector('[mindar-image-target]');
             const arVideoEl = document.getElementById('ar-video');
-            const galleryPlaceholderEl = document.getElementById('gallery-placeholder');
+            const galleryPlaneEl = document.getElementById('gallery-plane');
             const playVideoBtn = document.getElementById('play-video-btn');
             const gameBtn = document.getElementById('game-btn');
             const galleryBtn = document.getElementById('gallery-btn');
@@ -218,12 +199,12 @@
             const quizOptionsEl = document.getElementById('quiz-options');
             const quizResultEl = document.getElementById('quiz-result');
             const closeQuizBtn = document.getElementById('close-quiz');
-            const galleryFrame = document.getElementById('gallery-frame');
+            const galleryUI = document.getElementById('gallery-ui');
             const galleryImg = document.getElementById('gallery-img');
             const galleryCounter = document.getElementById('gallery-counter');
             const galleryPrev = document.getElementById('gallery-prev');
             const galleryNext = document.getElementById('gallery-next');
-            const closeGalleryFrame = document.getElementById('close-gallery-frame');
+            const closeGalleryUI = document.getElementById('close-gallery-ui');
 
             let isQuizActive = false;
             let currentQuestionIndex = 0;
@@ -312,7 +293,7 @@
                 currentQuestionIndex = 0;
             });
 
-            // Обробники посилань з актуальними описами
+            // Обробники посилань
             const links = {
                 'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
                 'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
@@ -326,51 +307,61 @@
                 });
             });
 
-            // Анімація відео (виїжджає ЗЛІВА)
+            // ✅ ВІДЕО: Висувається з-під фото вгору
             playVideoBtn.addEventListener('click', () => {
                 arVideoEl.setAttribute('visible', true);
-                arVideoEl.setAttribute('animation__enter', {
+                arVideoEl.setAttribute('position', '0 -0.5 0.05'); // Початок: під фото
+                arVideoEl.setAttribute('animation__appear', {
                     property: 'position',
-                    from: '-1.5 0.8 0.05',
-                    to: '0 0.8 0.05',
-                    dur: 800,
-                    easing: 'easeInOutQuad'
+                    to: '0 1.2 0.05', // Кінець: вгору
+                    dur: 700,
+                    easing: 'easeOutCubic',
+                    delay: 200
                 });
                 const videoElement = arVideoEl.components.material.material.map.image;
                 if (videoElement && typeof videoElement.play === 'function') {
-                    videoElement.play().catch(err => console.error('Помилка відео:', err));
+                    setTimeout(() => {
+                        videoElement.play().catch(err => console.error('Помилка відео:', err));
+                    }, 200);
+                    videoElement.onended = () => {
+                        arVideoEl.setAttribute('animation__disappear', {
+                            property: 'position',
+                            to: '0 -0.5 0.05', // Повертається під фото
+                            dur: 500,
+                            easing: 'easeInQuad'
+                        });
+                        setTimeout(() => {
+                            arVideoEl.setAttribute('visible', false);
+                        }, 500);
+                    };
                 }
             });
 
-            // При втраті маркера — ховаємо відео назад
-            if (targetEntity) {
-                targetEntity.addEventListener('targetLost', () => {
-                    console.log("ℹ️ Маркер втрачено.");
-                    if (arVideoEl) {
-                        const videoElement = arVideoEl.components.material.material.map.image;
-                        if (videoElement) {
-                            videoElement.pause();
-                            videoElement.currentTime = 0;
-                        }
-                        arVideoEl.setAttribute('visible', false);
-                    }
-                });
-            }
-
-            // Галерея: виїжджає ЗПРАВА → відкривається велике вікно
+            // ✅ ГАЛЕРЕЯ: Висувається з-під фото вниз
             galleryBtn.addEventListener('click', () => {
-                galleryPlaceholderEl.setAttribute('visible', true);
-                galleryPlaceholderEl.setAttribute('animation__enter', {
+                galleryPlaneEl.setAttribute('visible', true);
+                galleryPlaneEl.setAttribute('position', '0 -0.5 0.05'); // Початок: під фото
+                galleryPlaneEl.setAttribute('animation__appear', {
                     property: 'position',
-                    from: '1.5 0.8 0.05',
-                    to: '0 0.8 0.05',
-                    dur: 800,
-                    easing: 'easeInOutQuad'
+                    to: '0 -0.8 0.05', // Кінець: трохи нижче
+                    dur: 600,
+                    easing: 'easeOutCubic',
+                    delay: 200
+                });
+            });
+
+            galleryPlaneEl.addEventListener('click', () => {
+                galleryPlaneEl.setAttribute('animation__return', {
+                    property: 'position',
+                    to: '0 -0.5 0.05', // Повертається під фото
+                    dur: 400,
+                    easing: 'easeInQuad'
                 });
                 setTimeout(() => {
+                    galleryPlaneEl.setAttribute('visible', false);
                     showGalleryPhoto(0);
-                    galleryFrame.style.display = 'block';
-                }, 500);
+                    galleryUI.style.display = 'block';
+                }, 400);
             });
 
             function showGalleryPhoto(index) {
@@ -388,28 +379,8 @@
                 if (currentPhotoIndex < totalPhotos - 1) showGalleryPhoto(currentPhotoIndex + 1);
             });
 
-            closeGalleryFrame.addEventListener('click', () => {
-                galleryFrame.style.display = 'none';
-                galleryPlaceholderEl.setAttribute('animation__exit', {
-                    property: 'position',
-                    to: '1.5 0.8 0.05',
-                    dur: 800,
-                    easing: 'easeInOutQuad'
-                });
-                setTimeout(() => {
-                    galleryPlaceholderEl.setAttribute('visible', false);
-                }, 800);
-            });
-
-            // Підтримка клавіш ← →
-            document.addEventListener('keydown', (e) => {
-                if (galleryFrame.style.display !== 'block') return;
-                if (e.key === 'ArrowLeft' && currentPhotoIndex > 0) {
-                    showGalleryPhoto(currentPhotoIndex - 1);
-                }
-                if (e.key === 'ArrowRight' && currentPhotoIndex < totalPhotos - 1) {
-                    showGalleryPhoto(currentPhotoIndex + 1);
-                }
+            closeGalleryUI.addEventListener('click', () => {
+                galleryUI.style.display = 'none';
             });
 
             // Запуск вікторини
@@ -417,7 +388,7 @@
                 if (!isQuizActive) startQuiz();
             });
 
-            // ✅ КРИТИЧНЕ ВИПРАВЛЕННЯ: Лоадер ховається або при знаходженні маркера, або через 4 секунди
+            // ✅ Лоадер: ховається при targetFound або через 4 секунди
             let hasTargetBeenFound = false;
 
             if (targetEntity) {
@@ -425,28 +396,19 @@
                     console.log("🎯 Маркер знайдено!");
                     hasTargetBeenFound = true;
                     loader.style.display = 'none';
-                    
-                    if (arVideoEl.getAttribute('visible')) {
-                        const videoElement = arVideoEl.components.material.material.map.image;
-                        if (videoElement && videoElement.paused) {
-                            videoElement.play().catch(err => console.error('Помилка відео:', err));
-                        }
-                    }
                 });
             } else {
                 console.error('Елемент mindar-image-target не знайдено!');
             }
 
-            // Fallback: приховуємо лоадер через 4 секунди, якщо маркер не знайдено
             setTimeout(() => {
                 if (loader.style.display !== 'none') {
-                    console.log('ℹ️ Лоадер приховано примусово через таймаут.');
+                    console.log('ℹ️ Лоадер приховано примусово.');
                     loader.style.display = 'none';
-                    // Не показуємо alert, щоб не дратувати користувача
                 }
             }, 4000);
 
-            // ✅ ГОЛОВНЕ: Ручний Raycaster для тапів на мобільних
+            // ✅ Ручний Raycaster для тапів
             sceneEl.addEventListener('loaded', () => {
                 const canvas = sceneEl.canvas;
 
@@ -462,7 +424,7 @@
 
                 function handleClick(x, y) {
                     const raycaster = getMouseRay(x, y);
-                    const clickableElements = document.querySelectorAll('.clickable');
+                    const clickableElements = document.querySelectorAll('.clickable, #gallery-plane');
                     const intersections = [];
 
                     clickableElements.forEach(el => {
