@@ -65,10 +65,10 @@
             opacity: 0.8;
         }
 
-        /* Стиль для галереї в 3D */
+        /* Стиль для галереї */
         #gallery-ui {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 10002; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 12px; 
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            z-index: 10002; background: rgba(0, 0, 0, 0.7); padding: 15px; border-radius: 12px;
             display: none; color: white; text-align: center; font-family: 'Comic Neue', sans-serif;
             max-width: 80%; pointer-events: auto;
         }
@@ -79,7 +79,7 @@
             display: flex; justify-content: center; gap: 15px; margin-top: 10px;
         }
         #gallery-ui button {
-            background: rgba(255,255,255,0.2); color: white; border: none; 
+            background: rgba(255, 255, 255, 0.2); color: white; border: none;
             border-radius: 50%; width: 40px; height: 40px; font-size: 1.3em; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
@@ -191,17 +191,6 @@
                 height="0.9" 
                 visible="false">
             </a-video>
-
-            <!-- Галерея фото -- зменьшено z до 0.05 -->
-            <a-plane 
-                id="gallery-plane" 
-                width="1.6" 
-                height="0.9" 
-                position="0 -0.5 0.05" 
-                material="color: #222; opacity: 0.9" 
-                visible="false">
-                <a-text value="Натисніть, щоб переглянути" position="0 0 0.06" color="#FFF" align="center" width="3" scale="0.8 0.8 0.8"></a-text>
-            </a-plane>
         </a-entity>
     </a-scene>
 
@@ -211,7 +200,6 @@
             const sceneEl = document.querySelector('a-scene');
             const targetEntity = document.querySelector('[mindar-image-target]');
             const arVideoEl = document.getElementById('ar-video');
-            const galleryPlaneEl = document.getElementById('gallery-plane');
             const playVideoBtn = document.getElementById('play-video-btn');
             const gameBtn = document.getElementById('game-btn');
             const galleryBtn = document.getElementById('gallery-btn');
@@ -231,10 +219,9 @@
             if (!playVideoBtn) console.error('❗ Кнопка відео не знайдена!');
             if (!gameBtn) console.error('❗ Кнопка гри не знайдена!');
             if (!galleryBtn) console.error('❗ Кнопка галереї не знайдена!');
-            if (!galleryPlaneEl) console.error('❗ Площина галереї не знайдена!');
 
             let isQuizActive = false;
-            let isVideoPlaying = false; // Додано для перевірки дубль-кліків
+            let isVideoPlaying = false;
             let currentQuestionIndex = 0;
             let currentPhotoIndex = 0;
             const totalPhotos = 4;
@@ -254,11 +241,10 @@
                 alert('Не вдалося ініціалізувати AR. Перевірте маркер або підключення.');
             });
 
-            // Логіка вікторини (без змін, але скидаємо індекс при закритті)
             function startQuiz() {
-                if (isQuizActive) return; // Запобігаємо дублю
+                if (isQuizActive) return;
                 isQuizActive = true;
-                currentQuestionIndex = 0; // Скидаємо при новому запуску
+                currentQuestionIndex = 0;
                 quizContainer.style.display = 'block';
                 showQuestion();
             }
@@ -323,7 +309,6 @@
                 currentQuestionIndex = 0;
             });
 
-            // Лінки (без змін)
             const links = {
                 'youtube-btn': 'https://www.youtube.com/@23SmartLessa32',
                 'telegram-btn': 'https://t.me/+Ck0ua_cmlI84Yjcy',
@@ -336,7 +321,6 @@
                 if (btn) btn.addEventListener('click', () => window.open(links[id], '_blank', 'noopener,noreferrer'));
             });
 
-            // ✅ ВІДЕО: З перевіркою дубля
             if (playVideoBtn) {
                 playVideoBtn.addEventListener('click', () => {
                     if (isVideoPlaying) return;
@@ -374,7 +358,6 @@
                 });
             }
 
-            // ✅ ГРА: Запуск вікторини
             if (gameBtn) {
                 gameBtn.addEventListener('click', () => {
                     console.log("🎮 Клік по кнопці ГРА");
@@ -382,36 +365,11 @@
                 });
             }
 
-            // ✅ ГАЛЕРЕЯ: Анімація plane
             if (galleryBtn) {
                 galleryBtn.addEventListener('click', () => {
                     console.log("🖼️ Клік по кнопці ГАЛЕРЕЯ");
-                    galleryPlaneEl.setAttribute('visible', true);
-                    galleryPlaneEl.setAttribute('position', '0 -0.5 0.1');
-                    galleryPlaneEl.setAttribute('animation__appear', {
-                        property: 'position',
-                        to: '0 -0.8 0.1',
-                        dur: 600,
-                        easing: 'easeOutCubic',
-                        delay: 200
-                    });
-                });
-            }
-
-            // Обробник кліку на площині галереї (відкриває UI)
-            if (galleryPlaneEl) {
-                galleryPlaneEl.addEventListener('click', () => {
-                    galleryPlaneEl.setAttribute('animation__return', {
-                        property: 'position',
-                        to: '0 -0.5 0.1',
-                        dur: 400,
-                        easing: 'easeInQuad'
-                    });
-                    setTimeout(() => {
-                        galleryPlaneEl.setAttribute('visible', false);
-                        showGalleryPhoto(0);
-                        galleryUI.style.display = 'block';
-                    }, 400);
+                    showGalleryPhoto(0);
+                    galleryUI.style.display = 'block';
                 });
             }
 
@@ -430,7 +388,6 @@
             if (galleryNext) galleryNext.addEventListener('click', () => { if (currentPhotoIndex < totalPhotos - 1) showGalleryPhoto(currentPhotoIndex + 1); });
             if (closeGalleryUI) closeGalleryUI.addEventListener('click', () => { galleryUI.style.display = 'none'; });
 
-            // ✅ Лоадер
             let hasTargetBeenFound = false;
             if (targetEntity) {
                 targetEntity.addEventListener('targetFound', () => {
@@ -446,7 +403,6 @@
                 }
             }, 4000);
 
-            // ✅ Покращений Raycaster для тапів/кліків
             sceneEl.addEventListener('loaded', () => {
                 const canvas = sceneEl.canvas;
 
@@ -462,8 +418,7 @@
 
                 function handleClick(x, y, eventType = 'click') {
                     const raycaster = getMouseRay(x, y);
-                    // Пріоритет: кнопки > gallery-plane
-                    const targetElements = [playVideoBtn, gameBtn, galleryBtn, galleryPlaneEl].filter(el => el && el.getAttribute('visible') !== 'false');
+                    const targetElements = [playVideoBtn, gameBtn, galleryBtn].filter(el => el && el.getAttribute('visible') !== 'false');
                     const intersections = [];
 
                     targetElements.forEach(el => {
@@ -480,18 +435,12 @@
                         intersections.sort((a, b) => a.distance - b.distance);
                         const closestEl = intersections[0].el;
                         console.log(`🎯 Клік на ${closestEl.id} (відстань: ${intersections[0].distance.toFixed(2)})`);
-                        // Виключаємо галерею, якщо клік на кнопці
-                        if (closestEl.id !== 'gallery-plane' || (closestEl.id === 'gallery-plane' && !intersections.some(i => i.id !== 'gallery-plane'))) {
-                            closestEl.emit(eventType);
-                        } else {
-                            console.log('❌ Клік перехоплено галереєю, ігноруємо');
-                        }
+                        closestEl.emit(eventType);
                     } else {
                         console.log('❌ Клік не перехоплено — жоден елемент не знайдено');
                     }
                 }
 
-                // Мобільні: touch
                 canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
                 canvas.addEventListener('touchend', e => {
                     e.preventDefault();
@@ -501,9 +450,8 @@
                     }
                 }, { passive: false });
 
-                // Десктоп: click + mouseup (fallback)
                 canvas.addEventListener('click', e => handleClick(e.clientX, e.clientY));
-                canvas.addEventListener('mouseup', e => handleClick(e.clientX, e.clientY, 'mouseup')); // Додатковий для стабільності
+                canvas.addEventListener('mouseup', e => handleClick(e.clientX, e.clientY, 'mouseup'));
             });
         });
     </script>
