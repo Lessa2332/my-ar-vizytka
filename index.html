@@ -98,7 +98,7 @@
             <img id="goy-icon" src="https://lessa2332.github.io/my-ar-vizytka/assets/icons/goy.png">
         </a-assets>
 
-        <!-- Камера з підтримкою кліків -->
+        <!-- Камера з підтримкою ТАПІВ (не mouse!) -->
         <a-camera
             position="0 0 0"
             look-controls="enabled: false"
@@ -112,13 +112,13 @@
             
             <!-- Кнопки зверху (горизонтальний ряд) -->
             <a-plane id="instagram-btn" class="clickable" width="0.15" height="0.15" position="-0.6 0.4 0.05" rotation="0 0 0" material="src: #instagram-icon; transparent: true; opacity: 1;" aria-label="Відкрити Instagram"></a-plane>
-            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="-0.3 0.4 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
+            <a-plane id="quiz-btn" class="clickable" width="0.15" height="0.15" position="-0.3 0.4 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати вікторину"></a-plane>
             <a-plane id="youtube-btn" class="clickable" width="0.15" height="0.15" position="0.0 0.4 0.05" rotation="0 0 0" material="src: #youtube-icon; transparent: true; opacity: 1;" aria-label="Відкрити YouTube канал"></a-plane>
             <a-plane id="telegram-btn" class="clickable" width="0.15" height="0.15" position="0.3 0.4 0.05" rotation="0 0 0" material="src: #telegram-icon; transparent: true; opacity: 1;" aria-label="Приєднатися до Telegram"></a-plane>
             <a-plane id="google-btn" class="clickable" width="0.15" height="0.15" position="0.6 0.4 0.05" rotation="0 0 0" material="src: #googlesites-icon; transparent: true; opacity: 1;" aria-label="Відвідати Google Sites"></a-plane>
             
-            <!-- Кнопка вікторини знизу -->
-            <a-plane id="quiz-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #goy-icon; transparent: true; opacity: 1;" aria-label="Розпочати вікторину"></a-plane>
+            <!-- Кнопка відео тепер знизу (замість вікторини) -->
+            <a-plane id="play-video-btn" class="clickable" width="0.15" height="0.15" position="0.0 -0.4 0.05" rotation="0 0 0" material="src: #play-icon; transparent: true; opacity: 1;" aria-label="Відтворити відео"></a-plane>
             
             <!-- Відео вище -->
             <a-video id="ar-video" src="#lesa-video" position="0 0.8 0.05" width="1.6" height="0.9" visible="false" autoplay></a-video>
@@ -323,6 +323,26 @@
                 if (!isQuizActive) {
                     startQuiz();
                 }
+            });
+
+            // ✅ КРИТИЧНЕ ВИПРАВЛЕННЯ: Додаємо підтримку тапів на мобільних пристроях
+            sceneEl.addEventListener('loaded', () => {
+                // Додаємо обробник тапів для мобільних пристроїв
+                sceneEl.addEventListener('touchstart', function(e) {
+                    if (e.touches.length > 0) {
+                        const touch = e.touches[0];
+                        const mouseEvent = new MouseEvent('mousedown', {
+                            clientX: touch.clientX,
+                            clientY: touch.clientY
+                        });
+                        sceneEl.canvas.dispatchEvent(mouseEvent);
+                    }
+                });
+
+                sceneEl.addEventListener('touchend', function(e) {
+                    const mouseEvent = new MouseEvent('mouseup', {});
+                    sceneEl.canvas.dispatchEvent(mouseEvent);
+                });
             });
         });
     </script>
